@@ -18,7 +18,7 @@
 
 #include <math.h>
 
-#include "sequence.h"
+#include "patterns.h"
 
 
 

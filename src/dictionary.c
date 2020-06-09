@@ -176,7 +176,7 @@ int find_wrd(dictionary *dict, char *str, int *lengths, int n) {
  *  returns the entropy of a dictionary word
  */
 double rate_wrd(long dict_words) {
-	return 16;//log2(dict_words);
+	return 16.1; //log2(dict_words);
 }
 
 
