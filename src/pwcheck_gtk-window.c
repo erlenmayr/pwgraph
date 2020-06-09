@@ -24,7 +24,7 @@
 #include <math.h>
 #include <unistd.h>
 
-#include "word.h"
+#include "dictionary.h"
 #include "keyboard.h"
 #include "sequence.h"
 #include "graph.h"
