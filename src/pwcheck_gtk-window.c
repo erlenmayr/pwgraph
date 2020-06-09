@@ -34,64 +34,23 @@
 #define FLAG_09 4
 #define FLAG_SC 8
 
-// number of non-alphanumeric characters
-#define NUM_SC 32
-
-
-
-
-#define MAX_INPUT 25
 
 
 /*
- *  Prints out the estimated cracking time, assuming one billion attempts per
- *  second.
+ *  Puts information about the password to a GtkLabel.
  */
-void print_rating(double entropy, int len) {
-  return;
-	printf("<p>You password entropy: %.1f bits</p>\n", entropy);
-	printf("<p>Maximum entropy for this length: %.1f</p>\n", len * 6.5);
-	printf("<p>Estimated cracking time: ");
-	double seconds = pow(2, entropy) / 1000 / 1000 / 1000;
-	if (seconds < 0.000001) {
-		printf("%.0f ns</p>\n",
-				seconds * 1000 * 1000 * 1000);
-	} else 	if (seconds < 0.001) {
-		printf("%.0f µs</p>\n",
-				seconds * 1000 * 1000);
-	} else if (seconds < 1.0) {
-		printf("%.0f ms</p>\n",
-				seconds * 1000);
-	} else if (seconds < 60) {
-		printf("%.0f s</p>\n",
-				seconds);
-	} else if (seconds < 3600) {
-		printf("%.0f min</p>\n",
-				round(seconds / 60));
-	} else if (seconds < 3600 * 24) {
-		printf("%.0f h</p>\n",
-				round(seconds / 3600));
-	} else if (seconds < 3600 * 24 * 365.25) {
-		printf("%.0f days</p>\n",
-				round(seconds / 3600 / 24));
-	} else if (seconds < 3600 * 24 * 365.25 * 1000 * 1000 * 1000) {
-		printf("%.0f years</p>\n",
-				round(seconds / 3600 / 24 / 365.25));
-	} else {
-		printf("%.3e years</p>\n",
-				round(seconds / 3600 / 24 / 365.25));
-	}
-}
-
-
-/*
- *  Returns true, iff a character is a non-blank ASCII character.
- */
-int printable_ascii(char c) {
-	if (!('!' <= c && c <= '~')) {
-		return 0;
-	}
-	return 1;
+void
+print_rating(double   entropy,
+             int      len,
+             GtkLabel *label)
+{
+  char buf[256];
+  sprintf(buf,
+          "You password entropy: %.1f bits\nMaximum entropy for length %d: %.1f bits\n",
+          entropy,
+          len,
+          len * log2(94));
+	gtk_label_set_text(label, buf);
 }
 
 
@@ -99,7 +58,9 @@ int printable_ascii(char c) {
 /*
  *  Computes the charset of a string.
  */
-int compute_charset(char *str) {
+int
+compute_charset(char *str)
+{
 	char flags = 0;
 	for (char *c = str; *c != '\0'; c++) {
 		if ('a' <= *c && *c <= 'z') {
@@ -124,7 +85,8 @@ int compute_charset(char *str) {
 		charset += 10;
 	}
 	if (flags & FLAG_SC) {
-		charset += NUM_SC;
+    // number of ASCII chars which are neither letters nor digits
+		charset += 32;
 	}
 
 	return charset;
@@ -141,7 +103,14 @@ int compute_charset(char *str) {
  *  graph *G	the whole graph
  *  int factor	the number of random characters are following in a row
  */
-void print_table_line(const char *str, int u, int v, graph *G, int factor, GtkListStore *ls) {
+void
+print_table_line(const char   *str,
+                 int          u,
+                 int          v,
+                 graph        *G,
+                 int          factor,
+                 GtkListStore *ls)
+{
 	char *cat, *formula;
 	int len = v - u;
 	double entropy = G->edge[u][v];
@@ -194,7 +163,14 @@ void print_table_line(const char *str, int u, int v, graph *G, int factor, GtkLi
 /*
  *  Computes and returns the entropy of the whole password.
  */
-double compute_entropy(char *word, dictionary *dict, long dict_words, GtkListStore *ls, GtkImage *gi) {
+double
+compute_entropy(char          *word,
+                dictionary    *dict,
+                long          dict_words,
+                GtkListStore  *ls,
+                GtkImage      *gi,
+                GtkLabel      *label)
+{
 	int n = strlen(word);
 	int charset = compute_charset(word);
 	graph *G = graph_new(n + 1, log2(charset));
@@ -247,30 +223,18 @@ double compute_entropy(char *word, dictionary *dict, long dict_words, GtkListSto
 		}
 	}
 
-
-	print_rating(entropy, n);
-
+	print_rating(entropy, n, label);
 
 	graphviz(G, word, path);
-  gtk_image_set_from_file(gi, "/home/stephan/.pwgraph.svg");
 
+  char graphpath[128];
+  sprintf(graphpath, "%s/pwgraph.svg", getenv("HOME"));
+  gtk_image_set_from_file(gi, graphpath);
+  remove(graphpath);
 	graph_free(G);
 	dictionary_free(repetitions);
 	return entropy;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -289,6 +253,10 @@ struct _PwcheckGtkWindow
   GtkListStore        *ls_decomp;
   GtkTreeView         *tv_decomp;
   GtkImage            *im_graph;
+  GtkLabel            *label_info;
+  dictionary          *dict;
+  long                dict_words;
+	long                dict_nodes;
 };
 
 G_DEFINE_TYPE (PwcheckGtkWindow, pwcheck_gtk_window, GTK_TYPE_APPLICATION_WINDOW)
@@ -299,13 +267,10 @@ static void
 bn_compute_clicked(GtkButton        *button,
                    PwcheckGtkWindow *self)
 {
-  g_assert (GTK_IS_BUTTON (button));
-	long dict_words = 0;
-	long dict_nodes = 0;
-	dictionary *dict = dictionary_new(&dict_words, &dict_nodes);
-  gchar buf[30];
+  GTK_IS_WIDGET(button);
+  gchar buf[33];
   strcpy(buf, gtk_entry_get_text(self->te_passwd));
-  compute_entropy(buf, dict, dict_words, self->ls_decomp, self->im_graph);
+  compute_entropy(buf, self->dict, self->dict_words, self->ls_decomp, self->im_graph, self->label_info);
 }
 
 
@@ -322,7 +287,7 @@ pwcheck_gtk_window_class_init (PwcheckGtkWindowClass *klass)
   gtk_widget_class_bind_template_child (widget_class, PwcheckGtkWindow, ls_decomp);
   gtk_widget_class_bind_template_child (widget_class, PwcheckGtkWindow, tv_decomp);
   gtk_widget_class_bind_template_child (widget_class, PwcheckGtkWindow, im_graph);
-
+  gtk_widget_class_bind_template_child (widget_class, PwcheckGtkWindow, label_info);
   gtk_widget_class_bind_template_callback (widget_class, bn_compute_clicked);
 }
 
@@ -330,5 +295,7 @@ static void
 pwcheck_gtk_window_init (PwcheckGtkWindow *self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
+	self->dict = dictionary_new(&self->dict_words, &self->dict_nodes);
+  bn_compute_clicked(self->bn_compute, self);
 }
 

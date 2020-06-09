@@ -133,6 +133,10 @@ double graph_compute_path(graph *G, int *path) {
  */
 void graph_print(FILE *file, graph *G, char *str, int *path) {
 	fprintf(file, "digraph G {\n");
+  fprintf(file, "graph [bgcolor=\"transparent\"]");
+  fprintf(file, "graph [fontname = \"cantarell\", fontsize=10]");
+  fprintf(file, "node [fontname = \"cantarell\", fontsize=10]");
+  fprintf(file, "edge [fontname = \"cantarell\", fontsize=10]");
 	fprintf(file, "\tnode [shape = circle];\n");
 	fprintf(file, "\trankdir = LR;\n");
 	for (int u = 0; u < G->n; u++) {
@@ -176,11 +180,8 @@ void graph_print(FILE *file, graph *G, char *str, int *path) {
 
 
 void graphviz(graph *G, char *str, int *path) {
-	//printf("<p>\n<img style=\"width:100%%\" src='data:image/svg+xml;utf8,");
-	fflush(stdout);
-	FILE *dot = popen("dot -Tsvg > /home/stephan/.pwgraph.svg", "w");
+	FILE *dot = popen("dot -Tsvg | sed -E 's/<svg width=\"[0-9]+pt\" height=\"[0-9]+pt\"/<svg width=\"800px\"/' > ~/pwgraph.svg", "w");
 	graph_print(dot, G, str, path);
-	//printf("' />\n</p>\n");
 	fclose(dot);
 }
 

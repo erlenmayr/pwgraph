@@ -18,7 +18,9 @@
   </object>
   <template class="PwcheckGtkWindow" parent="GtkApplicationWindow">
     <property name="can_focus">False</property>
+    <property name="default_width">800</property>
     <property name="default_height">600</property>
+    <property name="icon_name">security-high</property>
     <child type="titlebar">
       <object class="GtkHeaderBar" id="header_bar">
         <property name="visible">True</property>
@@ -31,8 +33,10 @@
           <object class="GtkEntry" id="te_passwd">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="text" translatable="yes">clown</property>
+            <property name="max_length">32</property>
+            <property name="text" translatable="yes">housefghou</property>
             <property name="input_purpose">password</property>
+            <signal name="activate" handler="bn_compute_clicked" swapped="no"/>
           </object>
         </child>
         <child>
@@ -57,16 +61,30 @@
       <object class="GtkBox" id="box">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="margin_left">5</property>
-        <property name="margin_right">5</property>
-        <property name="margin_top">5</property>
-        <property name="margin_bottom">5</property>
+        <property name="margin_left">50</property>
+        <property name="margin_right">50</property>
+        <property name="margin_top">50</property>
+        <property name="margin_bottom">50</property>
         <property name="orientation">vertical</property>
-        <property name="spacing">5</property>
+        <property name="spacing">50</property>
+        <child>
+          <object class="GtkLabel" id="label_info">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">No password entered yet.</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
         <child>
           <object class="GtkScrolledWindow">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
+            <property name="margin_left">100</property>
+            <property name="margin_right">100</property>
             <property name="shadow_type">in</property>
             <child>
               <object class="GtkTreeView" id="tv_decomp">
@@ -141,25 +159,19 @@
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">0</property>
+            <property name="position">1</property>
           </packing>
         </child>
         <child>
           <object class="GtkImage" id="im_graph">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="label" translatable="yes">Total Entropy:</property>
+            <property name="tooltip_markup" translatable="yes">&lt;b&gt;black&lt;/b&gt; random character
+&lt;span foreground="red"&gt;&lt;b&gt;red&lt;/b&gt;&lt;/span&gt; dictionary word
+&lt;span foreground="blue"&gt;&lt;b&gt;blue&lt;/b&gt;&lt;/span&gt; keyboard pattern
+&lt;span foreground="green"&gt;&lt;b&gt;green&lt;/b&gt;&lt;/span&gt; character sequence
+&lt;span foreground="orange"&gt;&lt;b&gt;orange&lt;/b&gt;&lt;/span&gt; pattern repetition</property>
+            <property name="stock">gtk-missing-image</property>
           </object>
           <packing>
             <property name="expand">False</property>

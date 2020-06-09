@@ -43,4 +43,9 @@ double rate_seq(char c, int len);
 int find_kbp(char *str);
 
 
+/*
+ *  Returns the entropy of a keyboard pattern.
+ */
+double rate_kbp(int len);
+
 

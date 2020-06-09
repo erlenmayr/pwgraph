@@ -194,7 +194,6 @@ static int key_neighbor(key k, key n) {
 
 
 
-
 int find_kbp(char *str) {
 	key k = spot_key(*str);
 	key n;
