@@ -25,7 +25,7 @@
         <property name="can_focus">False</property>
         <property name="tooltip_text" translatable="yes">Compute your password strength.</property>
         <property name="title">Paßwortpruͤfung</property>
-        <property name="subtitle" translatable="yes">Check your password!</property>
+        <property name="subtitle" translatable="yes">Graph-based password check</property>
         <property name="show_close_button">True</property>
         <child>
           <object class="GtkEntry" id="te_passwd">

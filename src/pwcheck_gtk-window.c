@@ -197,7 +197,7 @@ void print_table_line(const char *str, int u, int v, graph *G, int factor, GtkLi
 double compute_entropy(char *word, dictionary *dict, long dict_words, GtkListStore *ls, GtkImage *gi) {
 	int n = strlen(word);
 	int charset = compute_charset(word);
-	graph *G = graph_new(n + 1, 6.5); //logx2(charset));
+	graph *G = graph_new(n + 1, log2(charset));
 	long rep_nodes = 0;
 	long rep_size = 0;
 	dictionary *repetitions = dictionary_new_node(&rep_nodes);

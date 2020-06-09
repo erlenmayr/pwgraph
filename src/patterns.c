@@ -53,7 +53,7 @@ double rate_seq(char c, int len) {
 	if (('a' <= c && c <= 'z')
 			|| ('A' <= c && c <= 'Z')
 			|| ('0' <= c && c <= '9')) {
-		return 5 /*logx2(36)*/ + (len - 1) * log2(3);
+		return log2(36) + (len - 1) * log2(3);
 	}
 	return 0;
 }
@@ -216,7 +216,7 @@ int find_kbp(char *str) {
  *  Returns the entropy of a keyboard pattern.
  */
 double rate_kbp(int len) {
-	double entropy = 5.5 /*logx2(47)*/ + (len - 1) * log2(9);
+	double entropy = log2(47) + (len - 1) * log2(9);
 	return entropy;
 }
 
