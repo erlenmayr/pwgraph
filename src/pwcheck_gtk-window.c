@@ -25,8 +25,7 @@
 #include <unistd.h>
 
 #include "dictionary.h"
-#include "keyboard.h"
-#include "sequence.h"
+#include "patterns.h"
 #include "graph.h"
 
 // flags for character sets, SC are non-alphanumeric characters

@@ -1,9 +1,7 @@
 pwcheck_gtk_sources = [
   'dictionary.c',
   'graph.c',
-  'keyboard.c',
-  'sequence.c',
-  'word.c',
+  'patterns.c',
   'main.c',
   'pwcheck_gtk-window.c',
 ]
