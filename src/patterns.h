@@ -33,3 +33,14 @@ int find_seq(char *str);
  */
 double rate_seq(char c, int len);
 
+
+
+
+/**
+ *  Returns how many of the first characters of a string resemble a keyboard
+ *  pattern.
+ */
+int find_kbp(char *str);
+
+
+

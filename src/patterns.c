@@ -17,6 +17,7 @@
  */
 
 #include <math.h>
+#include <string.h>
 
 #include "patterns.h"
 
@@ -184,7 +185,8 @@ static key spot_key(char c) {
  *  Returns 1, iff keys k and n are neighbors.
  */
 static int key_neighbor(key k, key n) {
-	if (abs(k.row - n.row) <= 1 && abs(k.i - n.i) <= 1) {
+	if (abs(k.row - n.row) <= 1
+      && abs(k.i - n.i) <= 1) {
 		return 1;
 	}
 	return 0;
@@ -192,10 +194,7 @@ static int key_neighbor(key k, key n) {
 
 
 
-/*
- *  Returns how many of the first characters of a string resemble a keyboard
- *  pattern.
- */
+
 int find_kbp(char *str) {
 	key k = spot_key(*str);
 	key n;
