@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/com/verbuech/pwcheck-gtk">
+    <file>pwcheck_gtk-window.ui</file>
+  </gresource>
+</gresources>

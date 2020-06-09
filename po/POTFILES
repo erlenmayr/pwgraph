@@ -1,0 +1,7 @@
+data/com.verbuech.pwcheck-gtk.desktop.in
+data/com.verbuech.pwcheck-gtk.appdata.xml.in
+data/com.verbuech.pwcheck-gtk.gschema.xml
+src/pwcheck_gtk-window.ui
+src/main.c
+src/pwcheck_gtk-window.c
+

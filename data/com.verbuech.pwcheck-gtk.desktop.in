@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=pwcheck-gtk
+Exec=pwcheck-gtk
+Terminal=false
+Type=Application
+Categories=GTK;
+StartupNotify=true
