@@ -55,7 +55,7 @@ void dictionary_add(dictionary *dict, char *word, long *dict_words, long *dict_n
  *  int *dict_words	word counter for dictionary statistics
  *  int *dict_nodes	node counter for dictionary statistics
  */
-dictionary *dictionary_new(long *dict_words, long *dict_nodes);
+dictionary *dictionary_new(long *dict_words, long *dict_nodes, FILE *fd);
 
 
 
@@ -82,4 +82,6 @@ int find_wrd(dictionary *dict, char *str, int *lengths, int n);
  *  returns the entropy of a dictionary word
  */
 double rate_wrd(long dict_words);
+
+
 

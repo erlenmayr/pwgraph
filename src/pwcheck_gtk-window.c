@@ -294,7 +294,31 @@ static void
 pwcheck_gtk_window_init (PwcheckGtkWindow *self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
-	self->dict = dictionary_new(&self->dict_words, &self->dict_nodes);
+
+  /*
+   * init dictionary
+   */
+  const gchar *const *dirs = g_get_system_data_dirs();
+  FILE *fd = NULL;
+  for (int i = 0; dirs[i]; i++) {
+	  fd = fopen(g_build_path("/", dirs[i], "pwcheck-gtk", "dictionary.txt", NULL), "r");
+	  if (!fd) {
+      printf("Opened: %s\n", g_build_path("/", dirs[i], "pwcheck-gtk", "dictionary.txt", NULL));
+		  continue;
+	  } else {
+      goto go_on;
+    }
+  }
+  fprintf(stderr, "FATAL ERROR: Could not open \"dictionary.txt\".\n");
+	exit(-1);
+
+go_on:
+	self->dict = dictionary_new(&self->dict_words, &self->dict_nodes, fd);
+  fclose(fd),
+
+  /*
+   * draw a start screen
+   */
   bn_compute_clicked(self->bn_compute, self);
 }
 

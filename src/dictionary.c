@@ -121,18 +121,12 @@ void dictionary_add(dictionary *dict, char *word, long *dict_words, long *dict_n
  *  int *dict_words	word counter for dictionary statistics
  *  int *dict_nodes	node counter for dictionary statistics
  */
-dictionary *dictionary_new(long *dict_words, long *dict_nodes) {
+dictionary *dictionary_new(long *dict_words, long *dict_nodes, FILE *fd) {
 	dictionary *dict = dictionary_new_node(dict_nodes);
-	FILE *words = fopen("/home/stephan/pwcheck/dictionary.txt", "r");
-	if (!words) {
-		fprintf(stderr, "FATAL ERROR: Could not open \"dictionary.txt\".\n");
-		exit(-1);
-	}
 	char buf[100];
-	while (fgets(buf, 100, words)) {
+	while (fgets(buf, 100, fd)) {
 		dictionary_add(dict, buf, dict_words, dict_nodes);
 	}
-	fclose(words);
 	return dict;
 }
 
