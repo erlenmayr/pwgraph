@@ -46,7 +46,7 @@
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
             <property name="tooltip_text" translatable="yes">Click to test your password.</property>
-            <signal name="clicked" handler="bn_compute_clicked" object="entry_passwd" swapped="no"/>
+            <signal name="clicked" handler="bn_compute_clicked" swapped="no"/>
             <style>
               <class name="suggested-action"/>
             </style>
