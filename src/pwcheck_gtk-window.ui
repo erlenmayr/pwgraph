@@ -35,7 +35,7 @@
             <property name="max_length">32</property>
             <property name="text" translatable="yes">housefghou</property>
             <property name="input_purpose">password</property>
-            <signal name="activate" handler="bn_compute_clicked" swapped="no"/>
+            <signal name="activate" handler="enter_pressed" swapped="no"/>
           </object>
         </child>
         <child>

@@ -23,6 +23,7 @@
 #include <string.h>
 #include <math.h>
 #include <unistd.h>
+#include <sys/stat.h>
 
 #include "dictionary.h"
 #include "patterns.h"
@@ -37,14 +38,14 @@
 
 
 /*
- *  Puts information about the password to a GtkLabel.
+ *  Prints information about the password to a GtkLabel.
  */
 void
 print_rating(double   entropy,
              int      len,
              GtkLabel *label)
 {
-  char buf[256];
+  char buf[128];
   sprintf(buf,
           "You password entropy: %.1f bits\nMaximum entropy for this length: %.1f bits\n",
           entropy,
@@ -103,15 +104,15 @@ compute_charset(char *str)
  *  int factor	the number of random characters are following in a row
  */
 void
-print_table_line(const char   *str,
-                 int          u,
-                 int          v,
-                 graph        *G,
-                 int          factor,
-                 GtkListStore *ls)
+list_store_append_substring(const char   *str,
+                            int          u,
+                            int          v,
+                            graph        *G,
+                            int          len,
+                            GtkListStore *ls)
 {
 	char *cat, *formula;
-	int len = v - u;
+	int pathlen = v - u;
 	double entropy = G->edge[u][v];
 	switch (G->cat[u][v]) {
 		case WRD:
@@ -133,7 +134,7 @@ print_table_line(const char   *str,
 		case RND:
 			cat = "random";
 			formula = "𝑛 log₂(𝑘)";
-			len = factor;
+      pathlen = len;
 			entropy *= len;
 			break;
 		default:
@@ -142,16 +143,16 @@ print_table_line(const char   *str,
 			break;
 	}
 
-	char substring[len + 1];
-	strncpy(substring, str + u, len);
-	substring[len] = '\0';
+	char substring[pathlen + 1];
+	strncpy(substring, str + u, pathlen);
+	substring[pathlen] = '\0';
 
   GtkTreeIter iter;
   gtk_list_store_append(ls, &iter);
   gtk_list_store_set(ls, &iter,
                      0, substring,
                      1, cat,
-                     2, len,
+                     2, pathlen,
                      3, formula,
                      4, entropy,
                      -1);
@@ -216,7 +217,7 @@ compute_entropy(char          *word,
 	for (; i > 0; i--) {
 		int j;
 		for (j = i; j > 0 && path[j - 1] == path[j] + 1; j--);
-		print_table_line(word, path[i], path[i - 1], G, i - j, ls);
+		list_store_append_substring(word, path[i], path[i - 1], G, i - j, ls);
 		if (i != j) {
 			i = j + 1;
 		}
@@ -261,18 +262,28 @@ struct _PwcheckGtkWindow
 G_DEFINE_TYPE (PwcheckGtkWindow, pwcheck_gtk_window, GTK_TYPE_APPLICATION_WINDOW)
 
 
-
 static void
-bn_compute_clicked(GtkButton        *button,
-                   PwcheckGtkWindow *self)
-{
-  GTK_IS_WIDGET(button);
+start_computation(PwcheckGtkWindow *self) {
   gchar buf[33];
   strcpy(buf, gtk_entry_get_text(self->te_passwd));
   compute_entropy(buf, self->dict, self->dict_words, self->ls_decomp, self->im_graph, self->label_info);
 }
 
+static void
+bn_compute_clicked(GtkButton        *button,
+                   PwcheckGtkWindow *self)
+{
+  GTK_IS_BUTTON(button);
+  start_computation(self);
+}
 
+static void
+enter_pressed(GtkEntry         *entry,
+              PwcheckGtkWindow *self)
+{
+  GTK_IS_ENTRY(entry);
+  start_computation(self);
+}
 
 static void
 pwcheck_gtk_window_class_init (PwcheckGtkWindowClass *klass)
@@ -288,6 +299,7 @@ pwcheck_gtk_window_class_init (PwcheckGtkWindowClass *klass)
   gtk_widget_class_bind_template_child (widget_class, PwcheckGtkWindow, im_graph);
   gtk_widget_class_bind_template_child (widget_class, PwcheckGtkWindow, label_info);
   gtk_widget_class_bind_template_callback (widget_class, bn_compute_clicked);
+  gtk_widget_class_bind_template_callback (widget_class, enter_pressed);
 }
 
 static void
@@ -296,10 +308,9 @@ pwcheck_gtk_window_init (PwcheckGtkWindow *self)
   gtk_widget_init_template (GTK_WIDGET (self));
 
   /*
-   * init cache
+   * init cache directory
    */
-  mkdir(g_build_path("/", g_get_user_cache_dir(), "pwcheck-gtk", NULL), 0777);
-
+  mkdir(g_build_path("/", g_get_user_cache_dir(), "pwcheck-gtk", NULL), 0700);
 
   /*
    * init dictionary
@@ -309,9 +320,9 @@ pwcheck_gtk_window_init (PwcheckGtkWindow *self)
   for (int i = 0; dirs[i]; i++) {
 	  fd = fopen(g_build_path("/", dirs[i], "pwcheck-gtk", "dictionary.txt", NULL), "r");
 	  if (!fd) {
-      printf("Opened: %s\n", g_build_path("/", dirs[i], "pwcheck-gtk", "dictionary.txt", NULL));
 		  continue;
 	  } else {
+      printf("Opened: %s\n", g_build_path("/", dirs[i], "pwcheck-gtk", "dictionary.txt", NULL));
       goto go_on;
     }
   }
@@ -327,4 +338,5 @@ go_on:
    */
   bn_compute_clicked(self->bn_compute, self);
 }
+
 
