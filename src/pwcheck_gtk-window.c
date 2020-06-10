@@ -46,9 +46,8 @@ print_rating(double   entropy,
 {
   char buf[256];
   sprintf(buf,
-          "You password entropy: %.1f bits\nMaximum entropy for length %d: %.1f bits\n",
+          "You password entropy: %.1f bits\nMaximum entropy for this length: %.1f bits\n",
           entropy,
-          len,
           len * log2(94));
 	gtk_label_set_text(label, buf);
 }
