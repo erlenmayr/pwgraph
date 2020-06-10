@@ -1,5 +1,5 @@
 [Desktop Entry]
-Name=pwcheck-gtk
+Name=Paßwortpruͤfung
 Exec=pwcheck-gtk
 Terminal=false
 Type=Application

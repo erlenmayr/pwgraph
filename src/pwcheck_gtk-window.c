@@ -226,8 +226,8 @@ compute_entropy(char          *word,
 
 	graphviz(G, word, path);
 
-  char graphpath[128];
-  sprintf(graphpath, "%s/pwgraph.svg", getenv("HOME"));
+  char graphpath[256];
+  sprintf(graphpath, "%s/pwcheck-gtk/pwgraph.svg", g_get_user_cache_dir());
   gtk_image_set_from_file(gi, graphpath);
   remove(graphpath);
 	graph_free(G);
