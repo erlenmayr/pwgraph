@@ -296,6 +296,12 @@ pwcheck_gtk_window_init (PwcheckGtkWindow *self)
   gtk_widget_init_template (GTK_WIDGET (self));
 
   /*
+   * init cache
+   */
+  mkdir(g_build_path("/", g_get_user_cache_dir(), "pwcheck-gtk", NULL), 0777);
+
+
+  /*
    * init dictionary
    */
   const gchar *const *dirs = g_get_system_data_dirs();
