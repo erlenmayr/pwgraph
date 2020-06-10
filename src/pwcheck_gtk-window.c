@@ -341,7 +341,7 @@ pwcheck_gtk_window_init (PwcheckGtkWindow *self)
       goto go_on;
     }
   }
-  fprintf(stderr, "FATAL ERROR: Could not open \"dictionary.txt\".\n");
+  fprintf(stderr, "FATAL ERROR: Could not find “dictionary.txt”.\n");
 	exit(-1);
 
 go_on:
@@ -353,5 +353,6 @@ go_on:
    */
   bn_compute_clicked(self->bn_compute, self);
 }
+
 
 
