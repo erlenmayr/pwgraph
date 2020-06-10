@@ -2,9 +2,21 @@
 
 Graph-based password check
 
-## Screenshot
+## Install
 
-![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1")
+Flatpaks will be coming soon.
+
+### Debian/Ubuntu
+
+Build Dependenices:
+- graphviz
+- gnome-devel
+
+~~~~
+$ meson build
+$ ninja -C build
+$ ninja -C build install
+~~~~
 
 ## CGI Version
 
