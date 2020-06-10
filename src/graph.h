@@ -94,9 +94,3 @@ void path_print(int *path, int n);
 
 
 
-
-void graphviz(graph *G, char *str, int *path);
-
-
-
-

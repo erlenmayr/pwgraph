@@ -32,7 +32,6 @@
           <object class="GtkEntry" id="te_passwd">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="max_length">32</property>
             <property name="text" translatable="yes">housefghou</property>
             <property name="input_purpose">password</property>
             <signal name="activate" handler="enter_pressed" swapped="no"/>

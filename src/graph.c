@@ -179,9 +179,5 @@ void graph_print(FILE *file, graph *G, char *str, int *path) {
 
 
 
-void graphviz(graph *G, char *str, int *path) {
-	FILE *dot = popen("dot -Tsvg | sed -E 's/<svg width=\"[0-9]+pt\" height=\"[0-9]+pt\"/<svg width=\"800px\"/' > ~/.cache/pwcheck-gtk/pwgraph.svg", "w");
-	graph_print(dot, G, str, path);
-	fclose(dot);
-}
+
 

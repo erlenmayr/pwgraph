@@ -37,6 +37,25 @@
 
 
 
+
+
+
+
+void graphviz(graph *G, char *str, int *path, char *graphfile) {
+  char command[256];
+  sprintf(command, "dot -Tsvg | sed -E 's/<svg width=\"[0-9]+pt\" height=\"[0-9]+pt\"/<svg width=\"800px\"/' > %s", graphfile);
+	FILE *dot = popen(command, "w");
+	graph_print(dot, G, str, path);
+	fclose(dot);
+}
+
+
+
+
+
+
+
+
 /*
  *  Prints information about the password to a GtkLabel.
  */
@@ -47,8 +66,9 @@ print_rating(double   entropy,
 {
   char buf[128];
   sprintf(buf,
-          "You password entropy: %.1f bits\nMaximum entropy for this length: %.1f bits\n",
+          "You password entropy: %.1f bits\nMaximum entropy for length %d: %.1f bits\n",
           entropy,
+          len,
           len * log2(94));
 	gtk_label_set_text(label, buf);
 }
@@ -225,20 +245,15 @@ compute_entropy(char          *word,
 
 	print_rating(entropy, n, label);
 
-	graphviz(G, word, path);
-
-  char graphpath[256];
-  sprintf(graphpath, "%s/pwcheck-gtk/pwgraph.svg", g_get_user_cache_dir());
-  gtk_image_set_from_file(gi, graphpath);
-  remove(graphpath);
+  char *graphfile = g_build_path ("/", g_get_user_cache_dir(), "pwcheck-gtk", "pwgraph.svg", NULL);
+  graphviz(G, word, path, graphfile);
+  gtk_image_set_from_file(gi, graphfile);
+  remove(graphfile);
+  g_free(graphfile);
 	graph_free(G);
 	dictionary_free(repetitions);
 	return entropy;
 }
-
-
-
-
 
 
 
@@ -264,7 +279,7 @@ G_DEFINE_TYPE (PwcheckGtkWindow, pwcheck_gtk_window, GTK_TYPE_APPLICATION_WINDOW
 
 static void
 start_computation(PwcheckGtkWindow *self) {
-  gchar buf[33];
+  gchar buf[strlen(gtk_entry_get_text(self->te_passwd)) + 1];
   strcpy(buf, gtk_entry_get_text(self->te_passwd));
   compute_entropy(buf, self->dict, self->dict_words, self->ls_decomp, self->im_graph, self->label_info);
 }
