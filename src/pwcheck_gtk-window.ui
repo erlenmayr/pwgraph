@@ -2,6 +2,49 @@
 <!-- Generated with glade 3.22.2 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
+  <object class="GtkAboutDialog" id="about">
+    <property name="can_focus">False</property>
+    <property name="type_hint">dialog</property>
+    <property name="program_name">Passwortpruͤfung</property>
+    <property name="version">0.2</property>
+    <property name="copyright" translatable="yes">©2020 Stephan Verbücheln</property>
+    <property name="comments" translatable="yes">Graph-based password check</property>
+    <property name="website">https://github.com/erlenmayr/pwcheck</property>
+    <property name="website_label" translatable="yes">Github</property>
+    <property name="authors">Stephan Verbücheln</property>
+    <property name="logo_icon_name">image-missing</property>
+    <property name="license_type">gpl-3-0</property>
+    <child type="titlebar">
+      <placeholder/>
+    </child>
+    <child internal-child="vbox">
+      <object class="GtkBox">
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">2</property>
+        <child internal-child="action_area">
+          <object class="GtkButtonBox">
+            <property name="can_focus">False</property>
+            <property name="layout_style">end</property>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+      </object>
+    </child>
+  </object>
   <object class="GtkListStore" id="ls_decomp">
     <columns>
       <!-- column-name substring -->
@@ -51,6 +94,23 @@
           </object>
           <packing>
             <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkMenuButton" id="bn_menu">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="focus_on_click">False</property>
+            <property name="receives_default">True</property>
+            <property name="direction">none</property>
+            <property name="popover">po_menu</property>
+            <child>
+              <placeholder/>
+            </child>
+          </object>
+          <packing>
+            <property name="pack_type">end</property>
+            <property name="position">2</property>
           </packing>
         </child>
       </object>
@@ -179,4 +239,22 @@
       </object>
     </child>
   </template>
+  <object class="GtkPopover" id="po_menu">
+    <property name="can_focus">False</property>
+    <property name="relative_to">bn_menu</property>
+    <child>
+      <object class="GtkButton" id="bn_about">
+        <property name="label" translatable="yes">About</property>
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="receives_default">True</property>
+        <property name="margin_left">10</property>
+        <property name="margin_right">10</property>
+        <property name="margin_top">10</property>
+        <property name="margin_bottom">10</property>
+        <property name="relief">none</property>
+        <signal name="clicked" handler="bn_about_clicked" swapped="no"/>
+      </object>
+    </child>
+  </object>
 </interface>

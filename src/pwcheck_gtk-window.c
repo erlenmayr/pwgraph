@@ -272,6 +272,8 @@ struct _PwcheckGtkWindow
   dictionary          *dict;
   long                dict_words;
 	long                dict_nodes;
+  GtkButton           *bn_about;
+  GtkWidget           *about;
 };
 
 G_DEFINE_TYPE (PwcheckGtkWindow, pwcheck_gtk_window, GTK_TYPE_APPLICATION_WINDOW)
@@ -301,6 +303,14 @@ enter_pressed(GtkEntry         *entry,
 }
 
 static void
+bn_about_clicked(GtkButton        *button,
+                 PwcheckGtkWindow *self)
+{
+  GTK_IS_BUTTON(button);
+  gtk_widget_show(self->about);
+}
+
+static void
 pwcheck_gtk_window_class_init (PwcheckGtkWindowClass *klass)
 {
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
@@ -313,8 +323,11 @@ pwcheck_gtk_window_class_init (PwcheckGtkWindowClass *klass)
   gtk_widget_class_bind_template_child (widget_class, PwcheckGtkWindow, tv_decomp);
   gtk_widget_class_bind_template_child (widget_class, PwcheckGtkWindow, im_graph);
   gtk_widget_class_bind_template_child (widget_class, PwcheckGtkWindow, label_info);
+  gtk_widget_class_bind_template_child (widget_class, PwcheckGtkWindow, about);
+  gtk_widget_class_bind_template_child (widget_class, PwcheckGtkWindow, bn_about);
   gtk_widget_class_bind_template_callback (widget_class, bn_compute_clicked);
   gtk_widget_class_bind_template_callback (widget_class, enter_pressed);
+  gtk_widget_class_bind_template_callback (widget_class, bn_about_clicked);
 }
 
 static void
@@ -346,12 +359,12 @@ pwcheck_gtk_window_init (PwcheckGtkWindow *self)
 
 go_on:
 	self->dict = dictionary_new(&self->dict_words, &self->dict_nodes, fd);
-  fclose(fd),
+  fclose(fd);
 
   /*
    * draw a start screen
    */
-  bn_compute_clicked(self->bn_compute, self);
+  start_computation(self);
 }
 
 
