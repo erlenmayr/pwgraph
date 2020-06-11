@@ -5,7 +5,7 @@
   <object class="GtkAboutDialog" id="about">
     <property name="can_focus">False</property>
     <property name="type_hint">dialog</property>
-    <property name="program_name">Passwortpruͤfung</property>
+    <property name="program_name">Password Graph</property>
     <property name="version">0.2</property>
     <property name="copyright" translatable="yes">©2020 Stephan Verbücheln</property>
     <property name="comments" translatable="yes">Graph-based password check</property>
@@ -68,7 +68,7 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="tooltip_text" translatable="yes">Compute your password strength.</property>
-        <property name="title">Paßwortpruͤfung</property>
+        <property name="title">Password Graph</property>
         <property name="subtitle" translatable="yes">Graph-based password check</property>
         <property name="show_close_button">True</property>
         <child>
@@ -148,6 +148,10 @@
               <object class="GtkTreeView" id="tv_decomp">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="tooltip_text" translatable="yes">𝑛: length of the substring
+𝑖 : position of the substring in the password
+𝑑: size of the dictionary
+𝑘: number of keys on the keyboard</property>
                 <property name="vexpand">True</property>
                 <property name="model">ls_decomp</property>
                 <child internal-child="selection">

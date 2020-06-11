@@ -149,7 +149,7 @@ list_store_append_substring(const char   *str,
 			break;
 		case REP:
 			cat = "repetition";
-			formula = "log₂(1 + 𝑖 (𝑖 + 1) / 2)";
+			formula = "log₂(1 + ½ 𝑖 (𝑖 + 1))";
 			break;
 		case RND:
 			cat = "random";

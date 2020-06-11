@@ -1,5 +1,5 @@
 [Desktop Entry]
-Name=Paßwortpruͤfung
+Name=Password Graph
 Exec=pwcheck-gtk
 Terminal=false
 Type=Application
