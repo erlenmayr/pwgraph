@@ -1,6 +1,7 @@
 [Desktop Entry]
 Name=Password Graph
 Exec=pwcheck-gtk
+Icon=pwcheck-gtk-logo.svg
 Terminal=false
 Type=Application
 Categories=GTK;
