@@ -43,7 +43,7 @@
 
 void graphviz(graph *G, char *str, int *path, char *graphfile) {
   char command[256];
-  sprintf(command, "dot -Tsvg | sed -E 's/<svg width=\"[0-9]+pt\" height=\"[0-9]+pt\"/<svg width=\"800px\"/' > %s", graphfile);
+  sprintf(command, "dot -Tsvg | sed -E 's/<svg width=\"[0-9]+pt\" height=\"[0-9]+pt\"/<svg width=\"1000px\"/' > %s", graphfile);
 	FILE *dot = popen(command, "w");
 	graph_print(dot, G, str, path);
 	fclose(dot);
@@ -189,7 +189,8 @@ compute_entropy(char          *word,
                 long          dict_words,
                 GtkListStore  *ls,
                 GtkImage      *gi,
-                GtkLabel      *label)
+                GtkLabel      *label,
+                GtkWindow     *mwin)
 {
 	int n = strlen(word);
 	int charset = compute_charset(word);
@@ -247,7 +248,10 @@ compute_entropy(char          *word,
 
   char *graphfile = g_build_path ("/", g_get_user_cache_dir(), "pwcheck-gtk", "pwgraph.svg", NULL);
   graphviz(G, word, path, graphfile);
-  gtk_image_set_from_file(gi, graphfile);
+  GError **error;
+  GdkPixbuf *pb = gdk_pixbuf_new_from_file(graphfile, error);
+  cairo_surface_t *cs = gdk_cairo_surface_create_from_pixbuf (pb, 0, gtk_widget_get_window(GTK_WIDGET(mwin)));
+  gtk_image_set_from_surface (gi, cs);
   remove(graphfile);
   g_free(graphfile);
 	graph_free(G);
@@ -283,7 +287,7 @@ static void
 start_computation(PwcheckGtkWindow *self) {
   gchar buf[strlen(gtk_entry_get_text(self->te_passwd)) + 1];
   strcpy(buf, gtk_entry_get_text(self->te_passwd));
-  compute_entropy(buf, self->dict, self->dict_words, self->ls_decomp, self->im_graph, self->label_info);
+  compute_entropy(buf, self->dict, self->dict_words, self->ls_decomp, self->im_graph, self->label_info, self);
 }
 
 static void

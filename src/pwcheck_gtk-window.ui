@@ -12,7 +12,7 @@
     <property name="website">https://github.com/erlenmayr/pwcheck-gtk</property>
     <property name="website_label" translatable="yes">Github</property>
     <property name="authors">Stephan Verbücheln</property>
-    <property name="logo_icon_name">image-missing</property>
+    <property name="logo">../data/pwcheck-gtk-logo.svg</property>
     <property name="license_type">gpl-3-0</property>
     <child type="titlebar">
       <placeholder/>
