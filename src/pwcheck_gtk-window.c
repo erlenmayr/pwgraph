@@ -190,7 +190,7 @@ compute_entropy(char          *word,
                 GtkListStore  *ls,
                 GtkImage      *gi,
                 GtkLabel      *label,
-                GtkWindow     *mwin)
+                GdkWindow     *mwin)
 {
 	int n = strlen(word);
 	int charset = compute_charset(word);
@@ -248,9 +248,11 @@ compute_entropy(char          *word,
 
   char *graphfile = g_build_path ("/", g_get_user_cache_dir(), "pwcheck-gtk", "pwgraph.svg", NULL);
   graphviz(G, word, path, graphfile);
-  GError **error;
-  GdkPixbuf *pb = gdk_pixbuf_new_from_file(graphfile, error);
-  cairo_surface_t *cs = gdk_cairo_surface_create_from_pixbuf (pb, 0, gtk_widget_get_window(GTK_WIDGET(mwin)));
+  GError **err = NULL;
+  GdkPixbuf *pb = gdk_pixbuf_new_from_file(graphfile, err);
+  if (err)
+    fprintf(stderr, "ERROR loading file: %s\n", (*err)->message);
+  cairo_surface_t *cs = gdk_cairo_surface_create_from_pixbuf(pb, 0, mwin);
   gtk_image_set_from_surface (gi, cs);
   remove(graphfile);
   g_free(graphfile);
@@ -287,7 +289,7 @@ static void
 start_computation(PwcheckGtkWindow *self) {
   gchar buf[strlen(gtk_entry_get_text(self->te_passwd)) + 1];
   strcpy(buf, gtk_entry_get_text(self->te_passwd));
-  compute_entropy(buf, self->dict, self->dict_words, self->ls_decomp, self->im_graph, self->label_info, self);
+  compute_entropy(buf, self->dict, self->dict_words, self->ls_decomp, self->im_graph, self->label_info, gtk_widget_get_window(GTK_WIDGET(self)));
 }
 
 static void
