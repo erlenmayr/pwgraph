@@ -248,10 +248,10 @@ compute_entropy(char          *word,
 
   char *graphfile = g_build_path ("/", g_get_user_cache_dir(), "pwcheck-gtk", "pwgraph.svg", NULL);
   graphviz(G, word, path, graphfile);
-  GError **err = NULL;
-  GdkPixbuf *pb = gdk_pixbuf_new_from_file(graphfile, err);
+  GError *err = NULL;
+  GdkPixbuf *pb = gdk_pixbuf_new_from_file(graphfile, &err);
   if (err)
-    fprintf(stderr, "ERROR loading file: %s\n", (*err)->message);
+    fprintf(stderr, "ERROR loading file: %s\n", err->message);
   cairo_surface_t *cs = gdk_cairo_surface_create_from_pixbuf(pb, 0, mwin);
   gtk_image_set_from_surface (gi, cs);
   remove(graphfile);
