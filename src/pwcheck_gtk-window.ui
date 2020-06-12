@@ -224,15 +224,24 @@
           </packing>
         </child>
         <child>
-          <object class="GtkImage" id="im_graph">
+          <object class="GtkScrolledWindow">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="tooltip_markup" translatable="yes">&lt;b&gt;black&lt;/b&gt; random character
-&lt;span foreground="red"&gt;&lt;b&gt;red&lt;/b&gt;&lt;/span&gt; dictionary word
-&lt;span foreground="blue"&gt;&lt;b&gt;blue&lt;/b&gt;&lt;/span&gt; keyboard pattern
-&lt;span foreground="green"&gt;&lt;b&gt;green&lt;/b&gt;&lt;/span&gt; character sequence
-&lt;span foreground="orange"&gt;&lt;b&gt;orange&lt;/b&gt;&lt;/span&gt; pattern repetition</property>
-            <property name="stock">gtk-missing-image</property>
+            <property name="can_focus">True</property>
+            <property name="hexpand">True</property>
+            <property name="vexpand">True</property>
+            <child>
+              <object class="GtkViewport">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <child>
+                  <object class="GtkImage" id="im_graph">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="stock">gtk-missing-image</property>
+                  </object>
+                </child>
+              </object>
+            </child>
           </object>
           <packing>
             <property name="expand">False</property>
