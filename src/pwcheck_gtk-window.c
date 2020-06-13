@@ -320,6 +320,7 @@ draw_graph(GtkWidget         *sw,
   }
   cairo_surface_t *cs = gdk_cairo_surface_create_from_pixbuf(pb, 0, gtk_widget_get_window(GTK_WIDGET(self)));
   gtk_image_set_from_surface(self->im_graph, cs);
+  g_object_unref(pb);
   g_free(graphfile);
 }
 
