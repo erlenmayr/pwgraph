@@ -180,17 +180,51 @@ list_store_append_substring(const char   *str,
 
 
 
+
+
+struct _PwcheckGtkWindow
+{
+  GtkApplicationWindow  parent_instance;
+
+  /* Template widgets */
+  GtkHeaderBar        *header_bar;
+  GtkButton           *bn_compute;
+  GtkEntry            *te_passwd;
+  GtkListStore        *ls_decomp;
+  GtkTreeView         *tv_decomp;
+  GtkImage            *im_graph;
+  GtkLabel            *label_info;
+  dictionary          *dict;
+  long                dict_words;
+	long                dict_nodes;
+  GtkButton           *bn_about;
+  GtkWidget           *about;
+  GtkScrolledWindow   *sw_graph;
+};
+
+G_DEFINE_TYPE (PwcheckGtkWindow, pwcheck_gtk_window, GTK_TYPE_APPLICATION_WINDOW)
+
+
+
+
+
+
+
+
+
+
+
 /*
  *  Computes and returns the entropy of the whole password.
  */
 double
-compute_entropy(char          *word,
-                dictionary    *dict,
-                long          dict_words,
-                GtkListStore  *ls,
-                GtkImage      *gi,
-                GtkLabel      *label,
-                GdkWindow     *mwin)
+compute_entropy(char                  *word,
+                dictionary            *dict,
+                long                  dict_words,
+                GtkListStore          *ls,
+                GtkImage              *gi,
+                GtkLabel              *label,
+                PwcheckGtkWindow      *mwin)
 {
 	int n = strlen(word);
 	int charset = compute_charset(word);
@@ -249,12 +283,17 @@ compute_entropy(char          *word,
   char *graphfile = g_build_path ("/", g_get_user_cache_dir(), "pwcheck-gtk", "pwgraph.svg", NULL);
   graphviz(G, word, path, graphfile);
   GError *err = NULL;
-  GdkPixbuf *pb = gdk_pixbuf_new_from_file(graphfile, &err);
-  if (err)
+
+  GdkPixbuf *pb = gdk_pixbuf_new_from_file_at_scale(graphfile,
+                                                    2 * gtk_widget_get_allocated_width(GTK_WIDGET(mwin->im_graph)),
+                                                    2 * gtk_widget_get_allocated_height(GTK_WIDGET(mwin->im_graph)),
+                                                    TRUE,
+                                                    &err);
+  if (err) {
     fprintf(stderr, "ERROR loading file: %s\n", err->message);
-  cairo_surface_t *cs = gdk_cairo_surface_create_from_pixbuf(pb, 0, mwin);
+  }
+  cairo_surface_t *cs = gdk_cairo_surface_create_from_pixbuf(pb, 0, NULL);
   gtk_image_set_from_surface (gi, cs);
-  remove(graphfile);
   g_free(graphfile);
 	graph_free(G);
 	dictionary_free(repetitions);
@@ -263,33 +302,42 @@ compute_entropy(char          *word,
 
 
 
-struct _PwcheckGtkWindow
-{
-  GtkApplicationWindow  parent_instance;
 
-  /* Template widgets */
-  GtkHeaderBar        *header_bar;
-  GtkButton           *bn_compute;
-  GtkEntry            *te_passwd;
-  GtkListStore        *ls_decomp;
-  GtkTreeView         *tv_decomp;
-  GtkImage            *im_graph;
-  GtkLabel            *label_info;
-  dictionary          *dict;
-  long                dict_words;
-	long                dict_nodes;
-  GtkButton           *bn_about;
-  GtkWidget           *about;
-};
 
-G_DEFINE_TYPE (PwcheckGtkWindow, pwcheck_gtk_window, GTK_TYPE_APPLICATION_WINDOW)
+
+
+
+
+
 
 
 static void
 start_computation(PwcheckGtkWindow *self) {
   gchar buf[strlen(gtk_entry_get_text(self->te_passwd)) + 1];
   strcpy(buf, gtk_entry_get_text(self->te_passwd));
-  compute_entropy(buf, self->dict, self->dict_words, self->ls_decomp, self->im_graph, self->label_info, gtk_widget_get_window(GTK_WIDGET(self)));
+  compute_entropy(buf, self->dict, self->dict_words, self->ls_decomp, self->im_graph, self->label_info, self);
+}
+
+
+
+static void
+draw_graph(GtkWidget         *sw,
+           PwcheckGtkWindow  *self)
+{
+  GTK_IS_WIDGET(sw);
+  char *graphfile = g_build_path ("/", g_get_user_cache_dir(), "pwcheck-gtk", "pwgraph.svg", NULL);
+  GError *err = NULL;
+  GdkPixbuf *pb = gdk_pixbuf_new_from_file_at_scale(graphfile,
+                                                    2 * gtk_widget_get_allocated_width(GTK_WIDGET(self->im_graph)),
+                                                    2 * gtk_widget_get_allocated_height(GTK_WIDGET(self->im_graph)),
+                                                    TRUE,
+                                                    &err);
+  if (err) {
+    fprintf(stderr, "ERROR loading file: %s\n", err->message);
+  }
+  cairo_surface_t *cs = gdk_cairo_surface_create_from_pixbuf(pb, 0, NULL);
+  gtk_image_set_from_surface(self->im_graph, cs);
+  g_free(graphfile);
 }
 
 static void
@@ -334,6 +382,7 @@ pwcheck_gtk_window_class_init (PwcheckGtkWindowClass *klass)
   gtk_widget_class_bind_template_callback (widget_class, bn_compute_clicked);
   gtk_widget_class_bind_template_callback (widget_class, enter_pressed);
   gtk_widget_class_bind_template_callback (widget_class, bn_about_clicked);
+  gtk_widget_class_bind_template_callback (widget_class, draw_graph);
 }
 
 static void
