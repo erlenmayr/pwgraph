@@ -422,7 +422,7 @@ pwcheck_gtk_window_init (PwcheckGtkWindow *self)
 
   /*
    * init dictionary
-   * TODO: make this work in ~/.cache/gnome-builder/install
+   git* TODO: make this work in ~/.cache/gnome-builder/install
    */
   const gchar *const *dirs = g_get_system_data_dirs();
   FILE *fd = NULL;
