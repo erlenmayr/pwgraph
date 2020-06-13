@@ -265,8 +265,7 @@ compute_entropy(char         *word,
 	double entropy = graph_compute_path(G, path);
 
   gtk_list_store_clear(ls);
-
-	int i;
+  int i;
 	for (i = G->n - 1; path[i] == -1; i--);
 	for (; i > 0; i--) {
 		int j;
@@ -303,16 +302,15 @@ compute_entropy(char         *word,
 
 
 static void
-draw_graph(GtkWidget         *sw,
-           PwcheckGtkWindow  *self)
+draw_graph(PwcheckGtkWindow  *self)
 {
-  GTK_IS_WIDGET(sw);
   char *graphfile = g_build_path ("/", g_get_user_cache_dir(), "pwcheck-gtk", "pwgraph.svg", NULL);
   GError *err = NULL;
-  gint scale = 2 * gdk_window_get_scale_factor((GDK_WINDOW(self->sw_graph)));
+  /* FIXME: compute scale factor correctly */
+  gint sf = 2 * gdk_window_get_scale_factor((GDK_WINDOW(self->sw_graph)));
   GdkPixbuf *pb = gdk_pixbuf_new_from_file_at_scale(graphfile,
-                                                    scale * gtk_widget_get_allocated_width(GTK_WIDGET(self->sw_graph)),
-                                                    scale * gtk_widget_get_allocated_height(GTK_WIDGET(self->sw_graph)),
+                                                    sf * gtk_widget_get_allocated_width(GTK_WIDGET(self->sw_graph)),
+                                                    sf * gtk_widget_get_allocated_height(GTK_WIDGET(self->sw_graph)),
                                                     TRUE,
                                                     &err);
   if (err) {
@@ -330,11 +328,17 @@ start_computation(PwcheckGtkWindow *self) {
   gchar buf[strlen(gtk_entry_get_text(self->te_passwd)) + 1];
   strcpy(buf, gtk_entry_get_text(self->te_passwd));
   compute_entropy(buf, self->dict, self->dict_words, self->ls_decomp, self->label_info);
-  draw_graph(GTK_WIDGET(self), self);
+  draw_graph(self);
 }
 
 
-
+static void
+window_resized(GtkWidget        *sw,
+               PwcheckGtkWindow *self)
+{
+  GTK_IS_WIDGET(sw);
+  draw_graph(self);
+}
 
 
 
@@ -394,7 +398,7 @@ pwcheck_gtk_window_class_init (PwcheckGtkWindowClass *klass)
   gtk_widget_class_bind_template_callback (widget_class, bn_compute_clicked);
   gtk_widget_class_bind_template_callback (widget_class, enter_pressed);
   gtk_widget_class_bind_template_callback (widget_class, bn_about_clicked);
-  gtk_widget_class_bind_template_callback (widget_class, draw_graph);
+  gtk_widget_class_bind_template_callback (widget_class, window_resized);
 }
 
 static void
