@@ -44,7 +44,7 @@ install_data('dictionary.txt')
 
 scalable_iconsdir = join_paths('icons', 'hicolor', 'scalable', 'apps')
 install_data(
-  join_paths(scalable_iconsdir, '@0@.svg'.format(app_id)),
+  join_paths(scalable_iconsdir, 'com.verbuech.pwcheck-gtk.svg'),
   install_dir: join_paths(get_option('datadir'), scalable_iconsdir)
 )
 
