@@ -40,10 +40,14 @@
 
 
 
-
+/*
+ * FIXME: quotes in password
+ * TODO: implement without cached file
+ * TODO: make dot work in Flatpak
+ */
 void graphviz(graph *G, char *str, int *path, char *graphfile) {
   char command[256];
-  sprintf(command, "dot -Tsvg | sed -E 's/<svg width=\"[0-9]+pt\" height=\"[0-9]+pt\"/<svg width=\"1000px\"/' > %s", graphfile);
+  sprintf(command, "dot -Tsvg > %s", graphfile);
 	FILE *dot = popen(command, "w");
 	graph_print(dot, G, str, path);
 	fclose(dot);
@@ -217,6 +221,7 @@ G_DEFINE_TYPE (PwcheckGtkWindow, pwcheck_gtk_window, GTK_TYPE_APPLICATION_WINDOW
 
 /*
  *  Computes and returns the entropy of the whole password.
+ *  TODO: limit charset to ASCII
  */
 double
 compute_entropy(char         *word,
@@ -306,8 +311,7 @@ draw_graph(PwcheckGtkWindow  *self)
 {
   char *graphfile = g_build_path ("/", g_get_user_cache_dir(), "pwcheck-gtk", "pwgraph.svg", NULL);
   GError *err = NULL;
-  /* FIXME: compute scale factor correctly */
-  gint sf = 2 * gdk_window_get_scale_factor((GDK_WINDOW(self->sw_graph)));
+  gint sf = gdk_window_get_scale_factor(gtk_widget_get_window(GTK_WIDGET(self)));
   GdkPixbuf *pb = gdk_pixbuf_new_from_file_at_scale(graphfile,
                                                     sf * gtk_widget_get_allocated_width(GTK_WIDGET(self->sw_graph)),
                                                     sf * gtk_widget_get_allocated_height(GTK_WIDGET(self->sw_graph)),
@@ -359,6 +363,11 @@ enter_pressed(GtkEntry         *entry,
   start_computation(self);
 }
 
+/*
+ * FIXME: opening twice fails
+ * TODO: install icons properly
+ * TODO: make proper menu popover
+ */
 static void
 bn_about_clicked(GtkButton        *button,
                  PwcheckGtkWindow *self)
@@ -413,6 +422,7 @@ pwcheck_gtk_window_init (PwcheckGtkWindow *self)
 
   /*
    * init dictionary
+   * TODO: make this work in ~/.cache/gnome-builder/install
    */
   const gchar *const *dirs = g_get_system_data_dirs();
   FILE *fd = NULL;
