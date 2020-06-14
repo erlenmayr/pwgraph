@@ -111,27 +111,21 @@ double graph_compute_path(graph *G, int *path) {
 
 
 void graph_print(FILE *file, graph *G, char *str, int *path) {
-  fprintf(file, "digraph G {\n");
-  fprintf(file, "graph [bgcolor=\"transparent\"]");
-  fprintf(file, "graph [fontname = \"cantarell\", fontsize=10]");
-  fprintf(file, "node [fontname = \"cantarell\", fontsize=10]");
-  fprintf(file, "edge [fontname = \"cantarell\", fontsize=10]");
-  fprintf(file, "\tnode [shape = circle];\n");
-  fprintf(file, "\trankdir = LR;\n");
+  fprintf(file, "digraph G {\n"
+                "\tgraph [bgcolor=\"transparent\"];\n"
+                "\tedge [fontname = \"cantarell\", fontsize=10];\n"
+                "\tnode [shape = circle, fontname = \"cantarell\", fontsize=10];\n"
+                "\trankdir = LR;\n");
   for (int u = 0; u < G->n; u++) {
     for (int v = 0; v < G->n; v++) {
       if (G->edge[u][v] < INFINITY) {
-        char buf[strlen(str) * 6 + 1];
+        char buf[strlen(str) * 2 + 1];
         int i;
         char *c;
         for (i = 0, c = str + u; i < v - u; i++, c++) {
           if (*c == '\"') {
-            buf[i] = '&';
-            buf[++i] = 'q';
-            buf[++i] = 'u';
-            buf[++i] = 'o';
-            buf[++i] = 't';
-            buf[++i] = ';';
+            buf[i] = '\\';
+            buf[++i] = '\"';
           } else {
             buf[i] = *c;
           }
