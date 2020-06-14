@@ -19,8 +19,10 @@ This method is meant to simulate the worst case, i.e. that the attacker already 
 ## Build and install
 
 Build Dependenices:
-- graphviz
 - gnome-devel
+
+Runtime Dependencies:
+- graphviz
 
 ### Debian/Ubuntu
 ~~~~
@@ -42,4 +44,5 @@ $ ninja -C build install
 A past CGI version can be found here:
 
 https://verbuecheln.ch/pwcheck/ (IPv6 only)
+
 

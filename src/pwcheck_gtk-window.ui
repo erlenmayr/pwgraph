@@ -69,7 +69,6 @@
       <object class="GtkHeaderBar" id="header_bar">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="tooltip_text" translatable="yes">Compute your password strength.</property>
         <property name="title">Password Graph</property>
         <property name="subtitle" translatable="yes">Graph-based password check</property>
         <property name="show_close_button">True</property>
@@ -77,6 +76,7 @@
           <object class="GtkEntry" id="te_passwd">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
+            <property name="tooltip_text" translatable="yes">Enter your password here.</property>
             <property name="text" translatable="yes">housefghou</property>
             <property name="input_purpose">password</property>
             <signal name="activate" handler="enter_pressed" swapped="no"/>
@@ -88,7 +88,7 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
-            <property name="tooltip_text" translatable="yes">Click to test your password.</property>
+            <property name="tooltip_text" translatable="yes">Click to start computation.</property>
             <signal name="clicked" handler="bn_compute_clicked" swapped="no"/>
             <style>
               <class name="suggested-action"/>
@@ -121,13 +121,16 @@
       <object class="GtkBox" id="box_main">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="margin_left">20</property>
+        <property name="margin_right">20</property>
+        <property name="margin_top">20</property>
+        <property name="margin_bottom">20</property>
         <property name="orientation">vertical</property>
+        <property name="spacing">20</property>
         <child>
           <object class="GtkLabel" id="label_info">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="margin_top">20</property>
-            <property name="margin_bottom">20</property>
             <property name="label" translatable="yes">No password entered yet.</property>
           </object>
           <packing>
@@ -142,8 +145,6 @@
             <property name="can_focus">True</property>
             <property name="margin_left">100</property>
             <property name="margin_right">100</property>
-            <property name="margin_top">20</property>
-            <property name="margin_bottom">20</property>
             <property name="shadow_type">in</property>
             <child>
               <object class="GtkTreeView" id="tv_decomp">
@@ -229,8 +230,6 @@
           <object class="GtkScrolledWindow" id="sw_graph">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="margin_left">20</property>
-            <property name="margin_right">20</property>
             <property name="hexpand">True</property>
             <property name="vexpand">True</property>
             <child>
@@ -241,6 +240,11 @@
                   <object class="GtkImage" id="im_graph">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="tooltip_markup" translatable="yes">&lt;b&gt;black&lt;/b&gt; random character
+&lt;span foreground="red"&gt;&lt;b&gt;red&lt;/b&gt;&lt;/span&gt; dictionary word
+&lt;span foreground="blue"&gt;&lt;b&gt;blue&lt;/b&gt;&lt;/span&gt; keyboard pattern
+&lt;span foreground="green"&gt;&lt;b&gt;green&lt;/b&gt;&lt;/span&gt; character sequence
+&lt;span foreground="orange"&gt;&lt;b&gt;orange&lt;/b&gt;&lt;/span&gt; pattern repetition</property>
                     <property name="stock">gtk-missing-image</property>
                   </object>
                 </child>
