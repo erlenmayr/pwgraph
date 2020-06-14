@@ -26,11 +26,16 @@ Build Dependenices:
 ~~~~
 # apt install gnome-devel graphviz
 
+$ git clone https://github.com/erlenmayr/pwcheck-gtk
 $ cd pwcheck-gtk/
 $ meson build
 $ ninja -C build
 $ ninja -C build install
 ~~~~
+
+## Screenshots
+
+![Screenshot](web/screenshot_2020-06-14.png "Screenshot")
 
 ## CGI Version
 
