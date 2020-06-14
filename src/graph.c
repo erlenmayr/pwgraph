@@ -121,9 +121,18 @@ void graph_print(FILE *file, graph *G, char *str, int *path) {
   for (int u = 0; u < G->n; u++) {
     for (int v = 0; v < G->n; v++) {
       if (G->edge[u][v] < INFINITY) {
-        char buf[strlen(str) + 1];
-        strncpy(buf, str + u, v - u);
-        buf[v - u] = '\0';
+        char buf[strlen(str) * 2 + 1];
+        int i;
+        char *c;
+        for (i = 0, c = str + v; i < v - u; i++, c++) {
+          if (*c == '\"') {
+            buf[i++] = '\\';
+            buf[i] = '\"';
+          } else {
+            buf[i] = *c;
+          }
+        }
+        buf[i] = '\0';
         char *style = "";
         for (int i = 0; i < G->n - 1; i++) {
           if (path[i + 1] == u && path[i] == v) {
