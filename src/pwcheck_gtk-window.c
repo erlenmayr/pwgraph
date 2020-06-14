@@ -18,25 +18,22 @@
 
 #include "pwcheck_gtk-config.h"
 #include "pwcheck_gtk-window.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+
 #include <math.h>
-#include <unistd.h>
-#include <sys/stat.h>
 
 #include "dictionary.h"
 #include "patterns.h"
 #include "graph.h"
 
-// flags for character sets, SC are non-alphanumeric characters
-#define FLAG_az 1
-#define FLAG_AZ 2
-#define FLAG_09 4
-#define FLAG_SC 8
 
 
-
+/*
+ *  Flags for character sets, SC are non-alphanumeric characters.
+ */
+#define FLAG_az 0x1
+#define FLAG_AZ 0x2
+#define FLAG_09 0x4
+#define FLAG_SC 0x8
 
 
 
@@ -55,22 +52,28 @@ void graphviz(graph *G, char *str, int *path, char *graphfile) {
 
 
 
-
-
-
-
-
 /*
  *  Prints information about the password to a GtkLabel.
  */
 void
 print_rating(double   entropy,
              int      len,
-             GtkLabel *label)
+             GtkLabel *label,
+             gboolean ascii)
 {
-  char buf[128];
+  const gchar *template;
+  if (ascii) {
+    template = "You password entropy: %.1f bits\n"
+               "Maximum entropy for length %d: %.1f bits\n";
+
+  } else {
+    template = "You password entropy: %.1f bits\n"
+               "Maximum entropy for length %d: %.1f bits\n\n"
+               "WARNING: Non-ASCII characters lead to incorrect results.\n";
+  }
+  char buf[256];
   sprintf(buf,
-          "You password entropy: %.1f bits\nMaximum entropy for length %d: %.1f bits\n",
+          template,
           entropy,
           len,
           len * log2(94));
@@ -184,8 +187,6 @@ list_store_append_substring(const char   *str,
 
 
 
-
-
 struct _PwcheckGtkWindow
 {
   GtkApplicationWindow  parent_instance;
@@ -201,21 +202,15 @@ struct _PwcheckGtkWindow
   dictionary          *dict;
   long                dict_words;
 	long                dict_nodes;
+  gboolean            ascii;
+  gchar               *graphfile;
   GtkButton           *bn_about;
   GtkWidget           *about;
   GtkScrolledWindow   *sw_graph;
   GtkViewport         *vp_graph;
 };
 
-G_DEFINE_TYPE (PwcheckGtkWindow, pwcheck_gtk_window, GTK_TYPE_APPLICATION_WINDOW)
-
-
-
-
-
-
-
-
+G_DEFINE_TYPE(PwcheckGtkWindow, pwcheck_gtk_window, GTK_TYPE_APPLICATION_WINDOW)
 
 
 
@@ -226,9 +221,11 @@ G_DEFINE_TYPE (PwcheckGtkWindow, pwcheck_gtk_window, GTK_TYPE_APPLICATION_WINDOW
 double
 compute_entropy(char         *word,
                 dictionary   *dict,
-                long          dict_words,
+                long         dict_words,
                 GtkListStore *ls,
-                GtkLabel     *label)
+                GtkLabel     *label,
+                gboolean     ascii,
+                gchar        *graphfile)
 {
 	int n = strlen(word);
 	int charset = compute_charset(word);
@@ -281,11 +278,9 @@ compute_entropy(char         *word,
 		}
 	}
 
-	print_rating(entropy, n, label);
+	print_rating(entropy, n, label, ascii);
 
-  char *graphfile = g_build_path ("/", g_get_user_cache_dir(), "pwcheck-gtk", "pwgraph.svg", NULL);
   graphviz(G, word, path, graphfile);
-  g_free(graphfile);
 	graph_free(G);
 	dictionary_free(repetitions);
 	return entropy;
@@ -293,26 +288,12 @@ compute_entropy(char         *word,
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 static void
 draw_graph(PwcheckGtkWindow  *self)
 {
-  char *graphfile = g_build_path ("/", g_get_user_cache_dir(), "pwcheck-gtk", "pwgraph.svg", NULL);
   GError *err = NULL;
   gint sf = gdk_window_get_scale_factor(gtk_widget_get_window(GTK_WIDGET(self)));
-  GdkPixbuf *pb = gdk_pixbuf_new_from_file_at_scale(graphfile,
+  GdkPixbuf *pb = gdk_pixbuf_new_from_file_at_scale(self->graphfile,
                                                     sf * gtk_widget_get_allocated_width(GTK_WIDGET(self->sw_graph)),
                                                     sf * gtk_widget_get_allocated_height(GTK_WIDGET(self->sw_graph)),
                                                     TRUE,
@@ -323,18 +304,23 @@ draw_graph(PwcheckGtkWindow  *self)
   cairo_surface_t *cs = gdk_cairo_surface_create_from_pixbuf(pb, 0, gtk_widget_get_window(GTK_WIDGET(self)));
   gtk_image_set_from_surface(self->im_graph, cs);
   g_object_unref(pb);
-  g_free(graphfile);
 }
+
 
 
 static void
 start_computation(PwcheckGtkWindow *self) {
-  gchar buf[strlen(gtk_entry_get_text(self->te_passwd)) + 1];
+  gchar buf[gtk_entry_get_text_length(self->te_passwd) + 1];
   strcpy(buf, gtk_entry_get_text(self->te_passwd));
-  compute_entropy(buf, self->dict, self->dict_words, self->ls_decomp, self->label_info);
+  self->ascii = g_str_is_ascii(buf);
+  compute_entropy(buf, self->dict, self->dict_words, self->ls_decomp, self->label_info, self->ascii, self->graphfile);
 }
 
 
+
+/*
+ *  widget callback functions
+ */
 static void
 window_resized(GtkWidget        *sw,
                PwcheckGtkWindow *self)
@@ -342,8 +328,6 @@ window_resized(GtkWidget        *sw,
   GTK_IS_WIDGET(sw);
   draw_graph(self);
 }
-
-
 
 static void
 bn_compute_clicked(GtkButton        *button,
@@ -377,47 +361,42 @@ bn_about_clicked(GtkButton        *button,
 
 
 
-
-
-
-
-
-
-
-
-
 static void
-pwcheck_gtk_window_class_init (PwcheckGtkWindowClass *klass)
+pwcheck_gtk_window_class_init(PwcheckGtkWindowClass *klass)
 {
-  GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
-  gtk_widget_class_set_template_from_resource (widget_class, "/com/verbuech/pwcheck-gtk/pwcheck_gtk-window.ui");
+  GtkWidgetClass *widget_class = GTK_WIDGET_CLASS(klass);
+  gtk_widget_class_set_template_from_resource(widget_class, "/com/verbuech/pwcheck-gtk/pwcheck_gtk-window.ui");
 
-  gtk_widget_class_bind_template_child (widget_class, PwcheckGtkWindow, header_bar);
-  gtk_widget_class_bind_template_child (widget_class, PwcheckGtkWindow, bn_compute);
-  gtk_widget_class_bind_template_child (widget_class, PwcheckGtkWindow, te_passwd);
-  gtk_widget_class_bind_template_child (widget_class, PwcheckGtkWindow, ls_decomp);
-  gtk_widget_class_bind_template_child (widget_class, PwcheckGtkWindow, tv_decomp);
-  gtk_widget_class_bind_template_child (widget_class, PwcheckGtkWindow, im_graph);
-  gtk_widget_class_bind_template_child (widget_class, PwcheckGtkWindow, vp_graph);
-  gtk_widget_class_bind_template_child (widget_class, PwcheckGtkWindow, sw_graph);
-  gtk_widget_class_bind_template_child (widget_class, PwcheckGtkWindow, label_info);
-  gtk_widget_class_bind_template_child (widget_class, PwcheckGtkWindow, about);
-  gtk_widget_class_bind_template_child (widget_class, PwcheckGtkWindow, bn_about);
-  gtk_widget_class_bind_template_callback (widget_class, bn_compute_clicked);
-  gtk_widget_class_bind_template_callback (widget_class, enter_pressed);
-  gtk_widget_class_bind_template_callback (widget_class, bn_about_clicked);
-  gtk_widget_class_bind_template_callback (widget_class, window_resized);
+  gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, header_bar);
+  gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, bn_compute);
+  gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, te_passwd);
+  gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, ls_decomp);
+  gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, tv_decomp);
+  gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, im_graph);
+  gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, vp_graph);
+  gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, sw_graph);
+  gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, label_info);
+  gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, about);
+  gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, bn_about);
+  gtk_widget_class_bind_template_callback(widget_class, bn_compute_clicked);
+  gtk_widget_class_bind_template_callback(widget_class, enter_pressed);
+  gtk_widget_class_bind_template_callback(widget_class, bn_about_clicked);
+  gtk_widget_class_bind_template_callback(widget_class, window_resized);
 }
 
 static void
-pwcheck_gtk_window_init (PwcheckGtkWindow *self)
+pwcheck_gtk_window_init(PwcheckGtkWindow *self)
 {
-  gtk_widget_init_template (GTK_WIDGET (self));
+  gtk_widget_init_template(GTK_WIDGET(self));
 
+  self->ascii = FALSE;
   /*
    * init cache directory
    */
-  mkdir(g_build_path("/", g_get_user_cache_dir(), "pwcheck-gtk", NULL), 0700);
+  gchar *cachedir = g_build_path("/", g_get_user_cache_dir(), "pwcheck-gtk", NULL);
+  g_mkdir_with_parents(cachedir, 0700);
+  g_free(cachedir);
+  self->graphfile = g_build_path("/", g_get_user_cache_dir(), "pwcheck-gtk", "pwgraph.svg", NULL);
 
   /*
    * init dictionary
@@ -446,7 +425,6 @@ go_on:
    */
   start_computation(self);
 }
-
 
 
 
