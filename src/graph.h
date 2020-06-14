@@ -23,24 +23,24 @@
 /*
  *  Categories for the different types of substrings:
  *
- *  NON		no type
- *  RND		random string
- *  WRD		dictionary word
- *  SEQ		sequence
- *  KBP		keyboard pattern
- *  REP		repetition
+ *  NON: no type
+ *  RND: random string
+ *  WRD: dictionary word
+ *  SEQ: sequence
+ *  KBP: keyboard pattern
+ *  REP: repetition
  */
 typedef enum {NON, RND, WRD, SEQ, KBP, REP} category;
 
 
 
 /*
- * Adjacency matrix representing the graph.
+ *  Adjacency matrix representing the graph.
  */
 typedef struct {
-	int n;
-	double **edge;
-	category **cat;
+  int n;
+  double **edge;
+  category **cat;
 } graph;
 
 
@@ -48,8 +48,8 @@ typedef struct {
 /*
  *  Allocates and returns a new graph.
  *
- *  int n		number of nodes
- *  double value	default value for the edges on the path (1, 2, ..., n)
+ *  int n:           number of nodes
+ *  double value:    default value for the edges on the path (1, 2, ..., n)
  */
 graph *graph_new(int n, double weight);
 
@@ -72,8 +72,8 @@ void graph_update_edge(graph *G, int u, int v, double weight, category cat);
 /*
  *  Computes the shortes path from node 1 to node n.
  *
- *  int *path	string array of size n containing the path
- *		All empty fields are set to -1.
+ *  int *path:   string array of size n containing the path
+ *  All empty:   fields are set to -1.
  */
 double graph_compute_path(graph *G, int *path);
 

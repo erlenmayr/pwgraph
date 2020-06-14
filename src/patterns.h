@@ -29,8 +29,8 @@ int find_seq(char *str);
 /*
  *  Returns the entropy of a sequence string.
  *
- *  char c	first character
- *  int len	length of the sequence	
+ *  char c:   first character
+ *  int len:  length of the sequence
  */
 double rate_seq(char c, int len);
 

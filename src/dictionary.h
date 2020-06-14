@@ -25,8 +25,8 @@
  *  Implemented as a tree of prefixes for efficient matching.
  */
 typedef struct dictionary {
-	struct dictionary *next[26];
-	int end;
+  struct dictionary *next[26];
+  int end;
 } dictionary;
 
 
@@ -41,7 +41,7 @@ char normalize_letter(char c);
 /*
  * Allocates a new node for the dictionary.
  *
- * long *dict_nodes	node counter for dictionary statistics
+ * long *dict_nodes: node counter for dictionary statistics
  */
 dictionary *dictionary_new_node(long *dict_nodes);
 
@@ -57,8 +57,8 @@ void dictionary_free(dictionary *dict);
 /*
  *  Adds a single word to the dictionary. Stops at non-letter characters.
  * 
- *  int *dict_words	word counter for dictionary statistics
- *  int *dict_nodes	node counter for dictionary statistics
+ *  int *dict_words:  word counter for dictionary statistics
+ *  int *dict_nodes:  node counter for dictionary statistics
  */
 void dictionary_add(dictionary *dict, char *word, long *dict_words, long *dict_nodes);
 
@@ -68,8 +68,8 @@ void dictionary_add(dictionary *dict, char *word, long *dict_words, long *dict_n
  *  Initializes and returns a new dictionary based on the file
  *  represented by *fd.
  * 
- *  int *dict_words	word counter for dictionary statistics
- *  int *dict_nodes	node counter for dictionary statistics
+ *  int *dict_words:  word counter for dictionary statistics
+ *  int *dict_nodes:  node counter for dictionary statistics
  */
 dictionary *dictionary_new(long *dict_words, long *dict_nodes, FILE *fd);
 
@@ -78,11 +78,11 @@ dictionary *dictionary_new(long *dict_words, long *dict_nodes, FILE *fd);
 /*
  *  Finds dictionary words in a string.
  *
- *  dictionary *dict	the dictionary
- *  char *str		the string to be searched
- *  int *length		array to be filled with the lengths of all matches
+ *  dictionary *dict:  the dictionary
+ *  char *str:         the string to be searched
+ *  int *length:       array to be filled with the lengths of all matches
  *
- *  return		number of matches (entries in the integer array length)
+ *  return:            number of matches (entries in the integer array length)
  */
 int find_wrd(dictionary *dict, char *str, int *lengths, int n);
 

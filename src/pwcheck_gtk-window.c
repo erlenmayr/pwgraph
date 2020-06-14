@@ -45,9 +45,9 @@
 void graphviz(graph *G, char *str, int *path, char *graphfile) {
   char command[256];
   sprintf(command, "dot -Tsvg > %s", graphfile);
-	FILE *dot = popen(command, "w");
-	graph_print(dot, G, str, path);
-	fclose(dot);
+  FILE *dot = popen(command, "w");
+  graph_print(dot, G, str, path);
+  fclose(dot);
 }
 
 
@@ -77,7 +77,7 @@ print_rating(double   entropy,
           entropy,
           len,
           len * log2(94));
-	gtk_label_set_text(label, buf);
+  gtk_label_set_text(label, buf);
 }
 
 
@@ -88,35 +88,35 @@ print_rating(double   entropy,
 int
 compute_charset(char *str)
 {
-	char flags = 0;
-	for (char *c = str; *c != '\0'; c++) {
-		if ('a' <= *c && *c <= 'z') {
-			flags |= FLAG_az;
-		} else if ('A' <= *c && *c <='Z') {
-			flags |= FLAG_AZ;
-		} else if ('0' <= *c && *c <= '9') {
-			flags |= FLAG_09;
-		} else {
-			flags |= FLAG_SC;
-		}
-	}
+  char flags = 0;
+  for (char *c = str; *c != '\0'; c++) {
+    if ('a' <= *c && *c <= 'z') {
+      flags |= FLAG_az;
+    } else if ('A' <= *c && *c <='Z') {
+      flags |= FLAG_AZ;
+    } else if ('0' <= *c && *c <= '9') {
+      flags |= FLAG_09;
+    } else {
+      flags |= FLAG_SC;
+    }
+  }
 
-	int charset = 0;
-	if (flags & FLAG_az) {
-		charset += 26;
-	}
-	if (flags & FLAG_AZ) {
-		charset += 26;
-	}
-	if (flags & FLAG_09) {
-		charset += 10;
-	}
-	if (flags & FLAG_SC) {
+  int charset = 0;
+  if (flags & FLAG_az) {
+    charset += 26;
+  }
+  if (flags & FLAG_AZ) {
+    charset += 26;
+  }
+  if (flags & FLAG_09) {
+    charset += 10;
+  }
+  if (flags & FLAG_SC) {
     // number of ASCII chars which are neither letters nor digits
-		charset += 32;
-	}
+    charset += 32;
+  }
 
-	return charset;
+  return charset;
 }
 
 
@@ -124,11 +124,11 @@ compute_charset(char *str)
 /*
  *  Prints the result line for a substring starting at u, ending at v
  *
- *  char *str	the whole password string for output purposes
- *  int u	the node that starts the substring
- *  int v	the node that ends the substring
- *  graph *G	the whole graph
- *  int factor	the number of random characters are following in a row
+ *  char *str the whole password string for output purposes
+ *  int u the node that starts the substring
+ *  int v the node that ends the substring
+ *  graph *G the whole graph
+ *  int factor the number of random characters are following in a row
  */
 void
 list_store_append_substring(const char   *str,
@@ -138,41 +138,41 @@ list_store_append_substring(const char   *str,
                             int          len,
                             GtkListStore *ls)
 {
-	char *cat, *formula;
-	int pathlen = v - u;
-	double entropy = G->edge[u][v];
-	switch (G->cat[u][v]) {
-		case WRD:
-			cat = "dictionary";
-			formula = "log₂(𝑑)";
-			break;
-		case SEQ:
-			cat = "sequence";
-			formula = "log₂(𝑘) + (𝑛 - 1) log₂(3)";
-			break;
-		case KBP:
-			cat = "keyboard";
-			formula = "log₂(𝑘) + (𝑛 - 1) log₂(9)";
-			break;
-		case REP:
-			cat = "repetition";
-			formula = "log₂(1 + ½ 𝑖 (𝑖 + 1))";
-			break;
-		case RND:
-			cat = "random";
-			formula = "𝑛 log₂(𝑘)";
+  char *cat, *formula;
+  int pathlen = v - u;
+  double entropy = G->edge[u][v];
+  switch (G->cat[u][v]) {
+    case WRD:
+      cat = "dictionary";
+      formula = "log₂(𝑑)";
+      break;
+    case SEQ:
+      cat = "sequence";
+      formula = "log₂(𝑘) + (𝑛 - 1) log₂(3)";
+      break;
+    case KBP:
+      cat = "keyboard";
+      formula = "log₂(𝑘) + (𝑛 - 1) log₂(9)";
+      break;
+    case REP:
+      cat = "repetition";
+      formula = "log₂(1 + ½ 𝑖 (𝑖 + 1))";
+      break;
+    case RND:
+      cat = "random";
+      formula = "𝑛 log₂(𝑘)";
       pathlen = len;
-			entropy *= len;
-			break;
-		default:
-			cat = "non";
-			formula = "ERROR";
-			break;
-	}
+      entropy *= len;
+      break;
+    default:
+      cat = "non";
+      formula = "ERROR";
+      break;
+  }
 
-	char substring[pathlen + 1];
-	strncpy(substring, str + u, pathlen);
-	substring[pathlen] = '\0';
+  char substring[pathlen + 1];
+  strncpy(substring, str + u, pathlen);
+  substring[pathlen] = '\0';
 
   GtkTreeIter iter;
   gtk_list_store_append(ls, &iter);
@@ -201,7 +201,7 @@ struct _PwcheckGtkWindow
   GtkLabel            *label_info;
   dictionary          *dict;
   long                dict_words;
-	long                dict_nodes;
+  long                dict_nodes;
   gboolean            ascii;
   gchar               *graphfile;
   GtkButton           *bn_about;
@@ -227,63 +227,63 @@ compute_entropy(char         *word,
                 gboolean     ascii,
                 gchar        *graphfile)
 {
-	int n = strlen(word);
-	int charset = compute_charset(word);
-	graph *G = graph_new(n + 1, log2(charset));
-	long rep_nodes = 0;
-	long rep_size = 0;
-	dictionary *repetitions = dictionary_new_node(&rep_nodes);
+  int n = strlen(word);
+  int charset = compute_charset(word);
+  graph *G = graph_new(n + 1, log2(charset));
+  long rep_nodes = 0;
+  long rep_size = 0;
+  dictionary *repetitions = dictionary_new_node(&rep_nodes);
 
-	for (char *c = word; *c != '\0'; c++) {
-		int seqlen = find_seq(c);
-		int kbplen = find_kbp(c);
-		int wrdlen[n];
-		int wrdcnt = find_wrd(dict, c, wrdlen, n);
-		int replen[n];
-		int repcnt = find_wrd(repetitions, c, replen, n);
+  for (char *c = word; *c != '\0'; c++) {
+    int seqlen = find_seq(c);
+    int kbplen = find_kbp(c);
+    int wrdlen[n];
+    int wrdcnt = find_wrd(dict, c, wrdlen, n);
+    int replen[n];
+    int repcnt = find_wrd(repetitions, c, replen, n);
 
-		for (int i = 3; i <= seqlen; i++) {
-			graph_update_edge(G, c - word, c - word + i, rate_seq(*c, i), SEQ);
-		}
-		for (int i = 3; i <= kbplen; i++) {
-			graph_update_edge(G, c - word, c - word + i, rate_kbp(i), KBP);
-		}
-		for (int i = 0; i < wrdcnt; i++) {
-			graph_update_edge(G, c - word, c - word + wrdlen[i], rate_wrd(dict_words), WRD);
-		}
-		for (int i = 0; i < repcnt; i++) {
-			graph_update_edge(G, c - word, c - word + replen[i], rate_wrd(rep_size + 1), REP);
-		}
+    for (int i = 3; i <= seqlen; i++) {
+      graph_update_edge(G, c - word, c - word + i, rate_seq(*c, i), SEQ);
+    }
+    for (int i = 3; i <= kbplen; i++) {
+      graph_update_edge(G, c - word, c - word + i, rate_kbp(i), KBP);
+    }
+    for (int i = 0; i < wrdcnt; i++) {
+      graph_update_edge(G, c - word, c - word + wrdlen[i], rate_wrd(dict_words), WRD);
+    }
+    for (int i = 0; i < repcnt; i++) {
+      graph_update_edge(G, c - word, c - word + replen[i], rate_wrd(rep_size + 1), REP);
+    }
 
-		for (int i = 0; i < c - word; i++) {
-			char rep[c - word - i + 1];
-			strncpy(rep, word + i, c - word - i + 1);
-			rep[c - word - i + 1] = '\0';
-			dictionary_add(repetitions, rep, &rep_size, &rep_nodes);
-		}
-	}
+    for (int i = 0; i < c - word; i++) {
+      char rep[c - word - i + 1];
+      strncpy(rep, word + i, c - word - i + 1);
+      rep[c - word - i + 1] = '\0';
+      dictionary_add(repetitions, rep, &rep_size, &rep_nodes);
+    }
+  }
 
-	int path[G->n];
-	double entropy = graph_compute_path(G, path);
+  int path[G->n];
+  double entropy = graph_compute_path(G, path);
 
   gtk_list_store_clear(ls);
   int i;
-	for (i = G->n - 1; path[i] == -1; i--);
-	for (; i > 0; i--) {
-		int j;
-		for (j = i; j > 0 && path[j - 1] == path[j] + 1; j--);
-		list_store_append_substring(word, path[i], path[i - 1], G, i - j, ls);
-		if (i != j) {
-			i = j + 1;
-		}
-	}
+  for (i = G->n - 1; path[i] == -1; i--);
+  for (; i > 0; i--) {
+    int j;
+    for (j = i; j > 0 && path[j - 1] == path[j] + 1; j--);
+    list_store_append_substring(word, path[i], path[i - 1], G, i - j, ls);
+    if (i != j) {
+      i = j + 1;
+    }
+  }
 
-	print_rating(entropy, n, label, ascii);
+  print_rating(entropy, n, label, ascii);
 
   graphviz(G, word, path, graphfile);
-	graph_free(G);
-	dictionary_free(repetitions);
-	return entropy;
+  graph_free(G);
+  dictionary_free(repetitions);
+  return entropy;
 }
 
 
@@ -405,19 +405,19 @@ pwcheck_gtk_window_init(PwcheckGtkWindow *self)
   const gchar *const *dirs = g_get_system_data_dirs();
   FILE *fd = NULL;
   for (int i = 0; dirs[i]; i++) {
-	  fd = fopen(g_build_path("/", dirs[i], "pwcheck-gtk", "dictionary.txt", NULL), "r");
-	  if (!fd) {
-		  continue;
-	  } else {
+    fd = fopen(g_build_path("/", dirs[i], "pwcheck-gtk", "dictionary.txt", NULL), "r");
+    if (!fd) {
+      continue;
+    } else {
       printf("Opened: %s\n", g_build_path("/", dirs[i], "pwcheck-gtk", "dictionary.txt", NULL));
       goto go_on;
     }
   }
   fprintf(stderr, "FATAL ERROR: Could not find “dictionary.txt”.\n");
-	exit(-1);
+  exit(-1);
 
 go_on:
-	self->dict = dictionary_new(&self->dict_words, &self->dict_nodes, fd);
+  self->dict = dictionary_new(&self->dict_words, &self->dict_nodes, fd);
   fclose(fd);
 
   /*
