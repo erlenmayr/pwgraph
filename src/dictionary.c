@@ -25,9 +25,6 @@
 
 
 
-/*
- * Normalizes a letter (including 1337) to lower case.
- */
 char normalize_letter(char c) {
 	if ('a' <= c && c <= 'z') {
 		return c;
@@ -63,11 +60,7 @@ char normalize_letter(char c) {
 
 
 
-/*
- * Allocates a new node for the dictionary.
- *
- * long *dict_nodes	node counter for dictionary statistics
- */
+
 dictionary *dictionary_new_node(long *dict_nodes) {
 	(*dict_nodes)++;
 	dictionary *dict = malloc(sizeof(dictionary));
@@ -80,9 +73,6 @@ dictionary *dictionary_new_node(long *dict_nodes) {
 
 
 
-/*
- *  Recursively frees the memory of a dictionary.
- */
 void dictionary_free(dictionary *dict) {
 	for (int i = 0 ; i < 26; i++) {
 		if (dict->next[i] != NULL) {
@@ -94,12 +84,6 @@ void dictionary_free(dictionary *dict) {
 
 
 
-/*
- *  Adds a single word to the dictionary. Stops at non-letter characters.
- *
- *  int *dict_words	word counter for dictionary statistics
- *  int *dict_nodes	node counter for dictionary statistics
- */
 void dictionary_add(dictionary *dict, char *word, long *dict_words, long *dict_nodes) {
 	(*dict_words)++;
 	for (const char *c = word; normalize_letter(*c) != '\0'; c++) {
@@ -114,13 +98,6 @@ void dictionary_add(dictionary *dict, char *word, long *dict_words, long *dict_n
 
 
 
-/*
- *  Initializes and returns a new dictionary based on the file
- *  "/usr/share/dict/words".
- *
- *  int *dict_words	word counter for dictionary statistics
- *  int *dict_nodes	node counter for dictionary statistics
- */
 dictionary *dictionary_new(long *dict_words, long *dict_nodes, FILE *fd) {
 	dictionary *dict = dictionary_new_node(dict_nodes);
 	char buf[100];
@@ -132,15 +109,6 @@ dictionary *dictionary_new(long *dict_words, long *dict_nodes, FILE *fd) {
 
 
 
-/*
- *  Finds dictionary words in a string.
- *
- *  dictionary *dict	the dictionary
- *  char *str		the string to be searched
- *  int *length		array to be filled with the lengths of all matches
- *
- *  return		number of matches (entries in the integer array length)
- */
 int find_wrd(dictionary *dict, char *str, int *lengths, int n) {
 	int len = 0;
 	int cnt = 0;
@@ -164,9 +132,6 @@ int find_wrd(dictionary *dict, char *str, int *lengths, int n) {
 
 
 
-/*
- *  returns the entropy of a dictionary word
- */
 double rate_wrd(long dict_words) {
 	return log2(dict_words);
 }

@@ -25,12 +25,6 @@
 
 
 
-/*
- *  Allocates and returns a new graph.
- *
- *  int n		number of nodes
- *  double value	default value for the edges on the path (1, 2, ..., n)
- */
 graph *graph_new(int n, double weight) {
 	graph *G = malloc(sizeof(graph));
 	G->n = n;
@@ -54,9 +48,6 @@ graph *graph_new(int n, double weight) {
 
 
 
-/*
- *  Frees a graph's memory.
- */
 void graph_free(graph *G) {
 	if (G) {
 		if (G->edge) {
@@ -77,9 +68,6 @@ void graph_free(graph *G) {
 
 
 
-/*
- *  Updates a graph edge, if the new weight is less than the previous weight.
- */
 void graph_update_edge(graph *G, int u, int v, double weight, category cat) {
 	if (G->edge[u][v] > weight) {
 		G->edge[u][v] = weight;
@@ -89,12 +77,6 @@ void graph_update_edge(graph *G, int u, int v, double weight, category cat) {
 
 
 
-/*
- *  Computes the shortes path from node 1 to node n.
- *
- *  int *path	string array of size n containing the path
- *		All empty fields are set to -1.
- */
 double graph_compute_path(graph *G, int *path) {
 	// dist[u]: distance from node u to node n
 	double dist[G->n];
@@ -128,9 +110,6 @@ double graph_compute_path(graph *G, int *path) {
 
 
 
-/*
- *  Prints out a graph.
- */
 void graph_print(FILE *file, graph *G, char *str, int *path) {
 	fprintf(file, "digraph G {\n");
   fprintf(file, "graph [bgcolor=\"transparent\"]");
@@ -174,10 +153,6 @@ void graph_print(FILE *file, graph *G, char *str, int *path) {
 	}
 	fprintf(file, "}\n");
 }
-
-
-
-
 
 
 

@@ -19,6 +19,7 @@
 #include <stdio.h>
 
 
+
 /*
  *  Categories for the different types of substrings:
  *
@@ -33,7 +34,9 @@ typedef enum {NON, RND, WRD, SEQ, KBP, REP} category;
 
 
 
-// Adjacency matrix representing the graph
+/*
+ * Adjacency matrix representing the graph.
+ */
 typedef struct {
 	int n;
 	double **edge;
@@ -77,20 +80,9 @@ double graph_compute_path(graph *G, int *path);
 
 
 /*
- *  Prints out a graph.
+ *  Prints out a graph to a file.
  */
 void graph_print(FILE *file, graph *G, char *str, int *path);
-
-
-
-/*
- *  Prints out a path.
- *
- *  int n	size of the path array
- */
-void path_print(int *path, int n);
-
-
 
 
 

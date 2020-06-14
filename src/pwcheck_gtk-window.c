@@ -332,7 +332,6 @@ start_computation(PwcheckGtkWindow *self) {
   gchar buf[strlen(gtk_entry_get_text(self->te_passwd)) + 1];
   strcpy(buf, gtk_entry_get_text(self->te_passwd));
   compute_entropy(buf, self->dict, self->dict_words, self->ls_decomp, self->label_info);
-  draw_graph(self);
 }
 
 
@@ -422,7 +421,7 @@ pwcheck_gtk_window_init (PwcheckGtkWindow *self)
 
   /*
    * init dictionary
-   git* TODO: make this work in ~/.cache/gnome-builder/install
+   * TODO: make this work in ~/.cache/gnome-builder/install
    */
   const gchar *const *dirs = g_get_system_data_dirs();
   FILE *fd = NULL;

@@ -24,10 +24,6 @@
 
 
 
-/*
- *  Returns the length of the longest sequence (“abc”, “321” or “aaa”) in a
- *  string.
- */
 int find_seq(char *str) {
 	int len = 1;
 	for (char *c = str; *c != '\0'; c++) {
@@ -45,12 +41,6 @@ int find_seq(char *str) {
 
 
 
-/*
- *  Returns the entropy of a sequence string.
- *
- *  char c	first character
- *  int len	length of the sequence
- */
 double rate_seq(char c, int len) {
 	if (('a' <= c && c <= 'z')
 			|| ('A' <= c && c <= 'Z')
@@ -62,9 +52,9 @@ double rate_seq(char c, int len) {
 
 
 
-
-
-// Represents a key based on its keyboard coordinates.
+/*
+ * Represents a key based on its keyboard coordinates.
+ */
 typedef struct {
 	int row;
 	int i;
@@ -72,7 +62,9 @@ typedef struct {
 
 
 
-// keyboard layout
+/*
+ * keyboard layout (US)
+ */
 const char keyboard[4][15] = {
 	"`1234567890-= ",
 	" qwertyuiop[]\\",
@@ -162,7 +154,6 @@ static char normalize_key(char c) {
 
 
 
-
 /*
  *  Returns the corresponding key for an ASCII character.
  */
@@ -211,11 +202,10 @@ int find_kbp(char *str) {
 
 
 
-/*
- *  Returns the entropy of a keyboard pattern.
- */
 double rate_kbp(int len) {
 	double entropy = log2(47) + (len - 1) * log2(9);
 	return entropy;
 }
+
+
 

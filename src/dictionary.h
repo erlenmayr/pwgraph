@@ -16,7 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// represents a dictionary
+#include <stdio.h>
+
+
+
+/*
+ *  Represents a dictionary.
+ *  Implemented as a tree of prefixes for efficient matching.
+ */
 typedef struct dictionary {
 	struct dictionary *next[26];
 	int end;
@@ -25,9 +32,18 @@ typedef struct dictionary {
 
 
 /*
- * Normalizes a letter (including 1337) to lower case.
+ *  Normalizes a letter (including 1337) to lower case.
  */
 char normalize_letter(char c);
+
+
+
+/*
+ * Allocates a new node for the dictionary.
+ *
+ * long *dict_nodes	node counter for dictionary statistics
+ */
+dictionary *dictionary_new_node(long *dict_nodes);
 
 
 
@@ -50,18 +66,12 @@ void dictionary_add(dictionary *dict, char *word, long *dict_words, long *dict_n
 
 /*
  *  Initializes and returns a new dictionary based on the file
- *  "/usr/share/dict/words".
+ *  represented by *fd.
  * 
  *  int *dict_words	word counter for dictionary statistics
  *  int *dict_nodes	node counter for dictionary statistics
  */
 dictionary *dictionary_new(long *dict_words, long *dict_nodes, FILE *fd);
-
-
-
-
-dictionary *dictionary_new_node(long *dict_nodes);
-
 
 
 
