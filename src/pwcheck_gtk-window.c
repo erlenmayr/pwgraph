@@ -43,11 +43,11 @@
  * TODO: make dot work in Flatpak
  */
 void graphviz(graph *G, char *str, int *path, char *graphfile) {
-  char command[256];
-  sprintf(command, "dot -Tsvg > %s", graphfile);
+  char *command = g_strdup_printf("dot -Tsvg > %s", graphfile);
   FILE *dot = popen(command, "w");
   graph_print(dot, G, str, path);
   fclose(dot);
+  g_free(command);
 }
 
 
@@ -58,26 +58,15 @@ void graphviz(graph *G, char *str, int *path, char *graphfile) {
 void
 print_rating(double   entropy,
              int      len,
-             GtkLabel *label,
-             gboolean ascii)
+             GtkLabel *label)
 {
-  const gchar *template;
-  if (ascii) {
-    template = "You password entropy: %.1f bits\n"
-               "Maximum entropy for length %d: %.1f bits\n";
-
-  } else {
-    template = "You password entropy: %.1f bits\n"
-               "Maximum entropy for length %d: %.1f bits\n\n"
-               "WARNING: Non-ASCII characters lead to incorrect results.\n";
-  }
-  char buf[256];
-  sprintf(buf,
-          template,
-          entropy,
-          len,
-          len * log2(94));
+  char *buf = g_strdup_printf("You password entropy: %.1f bits\n"
+                              "Maximum entropy for length %d: %.1f bits\n",
+                              entropy,
+                              len,
+                              len * log2(94));
   gtk_label_set_text(label, buf);
+  g_free(buf);
 }
 
 
@@ -202,7 +191,6 @@ struct _PwcheckGtkWindow
   dictionary          *dict;
   long                dict_words;
   long                dict_nodes;
-  gboolean            ascii;
   gchar               *graphfile;
   GtkButton           *bn_about;
   GtkWidget           *about;
@@ -224,7 +212,6 @@ compute_entropy(char         *word,
                 long         dict_words,
                 GtkListStore *ls,
                 GtkLabel     *label,
-                gboolean     ascii,
                 gchar        *graphfile)
 {
   int n = strlen(word);
@@ -278,7 +265,7 @@ compute_entropy(char         *word,
     }
   }
 
-  print_rating(entropy, n, label, ascii);
+  print_rating(entropy, n, label);
 
   graphviz(G, word, path, graphfile);
   graph_free(G);
@@ -300,6 +287,7 @@ draw_graph(PwcheckGtkWindow  *self)
                                                     &err);
   if (err) {
     fprintf(stderr, "ERROR loading file: %s\n", err->message);
+    g_object_unref(err);
   }
   cairo_surface_t *cs = gdk_cairo_surface_create_from_pixbuf(pb, 0, gtk_widget_get_window(GTK_WIDGET(self)));
   gtk_image_set_from_surface(self->im_graph, cs);
@@ -312,8 +300,12 @@ static void
 start_computation(PwcheckGtkWindow *self) {
   gchar buf[gtk_entry_get_text_length(self->te_passwd) + 1];
   strcpy(buf, gtk_entry_get_text(self->te_passwd));
-  self->ascii = g_str_is_ascii(buf);
-  compute_entropy(buf, self->dict, self->dict_words, self->ls_decomp, self->label_info, self->ascii, self->graphfile);
+  if (g_str_is_ascii(buf)) {
+    compute_entropy(buf, self->dict, self->dict_words, self->ls_decomp, self->label_info, self->graphfile);
+  } else {
+    gtk_label_set_text(self->label_info, "Only ASCII characters are supported.");
+  }
+
 }
 
 
@@ -389,7 +381,6 @@ pwcheck_gtk_window_init(PwcheckGtkWindow *self)
 {
   gtk_widget_init_template(GTK_WIDGET(self));
 
-  self->ascii = FALSE;
   /*
    * init cache directory
    */
