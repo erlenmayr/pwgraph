@@ -152,6 +152,7 @@
                 <property name="can_focus">True</property>
                 <property name="tooltip_text" translatable="yes">𝑛: length of the substring
 𝑖 : position of the substring in the password
+𝑐: number of characters in the set
 𝑑: size of the dictionary
 𝑘: number of keys on the keyboard</property>
                 <property name="hexpand">True</property>

@@ -137,7 +137,7 @@ list_store_append_substring(const char   *str,
       break;
     case SEQ:
       cat = "sequence";
-      formula = "log₂(𝑘) + (𝑛 - 1) log₂(3)";
+      formula = "log₂(𝑐) + (𝑛 - 1) log₂(3)";
       break;
     case KBP:
       cat = "keyboard";
@@ -149,7 +149,7 @@ list_store_append_substring(const char   *str,
       break;
     case RND:
       cat = "random";
-      formula = "𝑛 log₂(𝑘)";
+      formula = "𝑛 log₂(𝑐)";
       pathlen = len;
       entropy *= len;
       break;
