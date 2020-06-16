@@ -38,7 +38,6 @@
 
 
 /*
- * FIXME: quotes in password
  * TODO: implement without cached file
  * TODO: make dot work in Flatpak
  */

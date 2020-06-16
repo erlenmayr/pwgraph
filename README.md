@@ -2,6 +2,11 @@
 
 Graph-based password check
 
+WARNING:
+- This version is still beta, do not use on real passwords.
+- Current version stores graph SVG to ~/.cache/pwcheck-gtk
+- Version will be switched to 1.0 when this behavior is removed.
+
 ## How does it work?
 
 The graph-based password check works as follows:
