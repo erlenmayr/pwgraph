@@ -338,17 +338,20 @@ enter_pressed(GtkEntry         *entry,
   start_computation(self);
 }
 
-/*
- * FIXME: opening twice fails
- * TODO: install icons properly
- * TODO: make proper menu popover
- */
 static void
 bn_about_clicked(GtkButton        *button,
                  PwcheckGtkWindow *self)
 {
   GTK_IS_BUTTON(button);
-  gtk_widget_show(self->about);
+  gtk_widget_show(GTK_WIDGET(self->about));
+}
+
+static void
+on_about_closed(GtkButton         *button,
+                 PwcheckGtkWindow *self)
+{
+  GTK_IS_BUTTON(button);
+  gtk_widget_hide(GTK_WIDGET(self->about));
 }
 
 
@@ -368,11 +371,13 @@ pwcheck_gtk_window_class_init(PwcheckGtkWindowClass *klass)
   gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, vp_graph);
   gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, sw_graph);
   gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, label_info);
+  /* TODO: make proper menu popover */
   gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, about);
   gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, bn_about);
   gtk_widget_class_bind_template_callback(widget_class, bn_compute_clicked);
   gtk_widget_class_bind_template_callback(widget_class, enter_pressed);
   gtk_widget_class_bind_template_callback(widget_class, bn_about_clicked);
+  gtk_widget_class_bind_template_callback(widget_class, on_about_closed);
   gtk_widget_class_bind_template_callback(widget_class, window_resized);
 }
 
