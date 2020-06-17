@@ -46,14 +46,20 @@ graphviz(graph *G,
 
 
 
-/*
- *  Prints information about the password to a GtkLabel.
+/**
+ * print_rating:
+ * @label: label to put the message to
+ * @entropy: entropy result of the password
+ * @len: length of the password
+ *
+ * Prints information about the password to a GtkLabel.
  */
 void
 print_rating(GtkLabel *label,
              double    entropy,
              int       len)
 {
+  GTK_IS_LABEL(label);
   char *buf = g_strdup_printf("You password entropy: %.1f bits\n"
                               "Maximum entropy for length %d: %.1f bits\n",
                               entropy,
@@ -62,10 +68,6 @@ print_rating(GtkLabel *label,
   gtk_label_set_text(label, buf);
   g_free(buf);
 }
-
-
-
-
 
 
 
