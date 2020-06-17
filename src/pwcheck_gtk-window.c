@@ -51,14 +51,20 @@ void graphviz(graph *G, char *str, int *path, char *graphfile) {
 
 
 
-/*
- *  Prints information about the password to a GtkLabel.
+/**
+ * print_rating:
+ * @label: label to put the message to
+ * @entropy: entropy result of the password
+ * @len: length of the password
+ *
+ * Prints information about the password to a GtkLabel.
  */
 void
-print_rating(double   entropy,
-             int      len,
-             GtkLabel *label)
+print_rating(GtkLabel *label,
+             double    entropy,
+             int       len)
 {
+  GTK_IS_LABEL(label);
   char *buf = g_strdup_printf("You password entropy: %.1f bits\n"
                               "Maximum entropy for length %d: %.1f bits\n",
                               entropy,
@@ -70,8 +76,13 @@ print_rating(double   entropy,
 
 
 
-/*
- *  Computes the charset of a string.
+/**
+ * compute_charset:
+ * @str: the password
+ *
+ * Computes the charset for a password
+ *
+ * Returns: bitmap of the charset
  */
 int
 compute_charset(char *str)
@@ -264,7 +275,7 @@ compute_entropy(char         *word,
     }
   }
 
-  print_rating(entropy, n, label);
+  print_rating(label, entropy, n);
 
   graphviz(G, word, path, graphfile);
   graph_free(G);
