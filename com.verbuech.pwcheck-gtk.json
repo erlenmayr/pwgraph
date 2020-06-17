@@ -8,8 +8,7 @@
         "--share=network",
         "--share=ipc",
         "--socket=fallback-x11",
-        "--socket=wayland",
-        "--filesystem=/usr/bin"
+        "--socket=wayland"
     ],
     "cleanup" : [
         "/include",
