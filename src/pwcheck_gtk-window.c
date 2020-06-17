@@ -27,19 +27,25 @@
 
 
 
-/*
+/**
+ * graphviz:
+ * @G: the graph to paint
+ * @word: the password
+ * @path: the path on the graph to highlight
+ * @graphfile: path of the graph SVG image
+ *
  * TODO: implement without cached file
  * TODO: make dot work in Flatpak
  */
 void
 graphviz(graph *G,
-         char  *str,
+         char  *word,
          int   *path,
          char  *graphfile)
 {
   char *command = g_strdup_printf("dot -Tsvg > %s", graphfile);
   FILE *dot = popen(command, "w");
-  graph_print(dot, G, str, path);
+  graph_print(dot, G, word, path);
   fclose(dot);
   g_free(command);
 }
@@ -71,19 +77,21 @@ print_rating(GtkLabel *label,
 
 
 
-/*
- *  Prints the result line for a substring starting at u, ending at v
+/**
+ * list_store_append_substring:
+ * @ls: list store to append the result to
+ * @G: the whole graph
+ * @word: the whole password string for output purposes
+ * @u: the node that starts the substring
+ * @v: the node that ends the substring
+ * @len: the number of random characters in a row
  *
- *  char *str the whole password string for output purposes
- *  int u the node that starts the substring
- *  int v the node that ends the substring
- *  graph *G the whole graph
- *  int factor the number of random characters are following in a row
+ *  Prints the result line for a substring starting at u, ending at v
  */
 void
 list_store_append_substring(GtkListStore *ls,
                             graph        *G,
-                            const char   *str,
+                            const char   *word,
                             int           u,
                             int           v,
                             int           len)
@@ -122,7 +130,7 @@ list_store_append_substring(GtkListStore *ls,
   }
 
   char substring[pathlen + 1];
-  strncpy(substring, str + u, pathlen);
+  strncpy(substring, word + u, pathlen);
   substring[pathlen] = '\0';
 
   GtkTreeIter iter;
@@ -138,42 +146,26 @@ list_store_append_substring(GtkListStore *ls,
 
 
 
-struct _PwcheckGtkWindow
-{
-  GtkApplicationWindow  parent_instance;
 
-  /* Template widgets */
-  GtkHeaderBar        *header_bar;
-  GtkButton           *bn_compute;
-  GtkEntry            *te_passwd;
-  GtkListStore        *ls_decomp;
-  GtkTreeView         *tv_decomp;
-  GtkImage            *im_graph;
-  GtkLabel            *label_info;
-  dictionary          *dict;
-  long                 dict_words;
-  long                 dict_nodes;
-  gchar               *graphfile;
-  GtkButton           *bn_about;
-  GtkWidget           *about;
-  GtkScrolledWindow   *sw_graph;
-  GtkViewport         *vp_graph;
-};
-
-G_DEFINE_TYPE(PwcheckGtkWindow, pwcheck_gtk_window, GTK_TYPE_APPLICATION_WINDOW)
-
-
-
-/*
- *  Computes and returns the entropy of the whole password.
- *  TODO: limit charset to ASCII
+/**
+ * compute_entropy:
+ * @ls: the list store for the result
+ * @label: the label for the summary
+ * @dict: the dictionary
+ * @dict_words: number of words in the dictionary (for entropy calculation)
+ * @word: the password
+ * @graphfile: path of the graph SVG image
+ *
+ * Computes and returns the entropy of the password.
+ *
+ * TODO: limit charset to ASCII
  */
 double
-compute_entropy(char         *word,
+compute_entropy(GtkListStore *ls,
+                GtkLabel     *label,
                 dictionary   *dict,
                 long          dict_words,
-                GtkListStore *ls,
-                GtkLabel     *label,
+                char         *word,
                 gchar        *graphfile)
 {
   int n = strlen(word);
@@ -208,7 +200,7 @@ compute_entropy(char         *word,
       char rep[c - word - i + 1];
       strncpy(rep, word + i, c - word - i + 1);
       rep[c - word - i + 1] = '\0';
-      dictionary_add(repetitions, rep, &rep_size, &rep_nodes);
+      dictionary_add(repetitions, rep, &rep_size);
     }
   }
 
@@ -237,8 +229,34 @@ compute_entropy(char         *word,
 
 
 
+struct _PwcheckGtkWindow
+{
+  GtkApplicationWindow  parent_instance;
+
+  /* Template widgets */
+  GtkHeaderBar        *header_bar;
+  GtkButton           *bn_compute;
+  GtkEntry            *te_passwd;
+  GtkListStore        *ls_decomp;
+  GtkTreeView         *tv_decomp;
+  GtkImage            *im_graph;
+  GtkLabel            *label_info;
+  dictionary          *dict;
+  long                 dict_words;
+  long                 dict_nodes;
+  gchar               *graphfile;
+  GtkButton           *bn_about;
+  GtkWidget           *about;
+  GtkScrolledWindow   *sw_graph;
+  GtkViewport         *vp_graph;
+};
+
+G_DEFINE_TYPE(PwcheckGtkWindow, pwcheck_gtk_window, GTK_TYPE_APPLICATION_WINDOW)
+
+
+
 static void
-draw_graph(PwcheckGtkWindow  *self)
+draw_graph(PwcheckGtkWindow *self)
 {
   GError *err = NULL;
   gint sf = gdk_window_get_scale_factor(gtk_widget_get_window(GTK_WIDGET(self)));
@@ -259,11 +277,12 @@ draw_graph(PwcheckGtkWindow  *self)
 
 
 static void
-start_computation(PwcheckGtkWindow *self) {
+start_computation(PwcheckGtkWindow *self)
+{
   gchar buf[gtk_entry_get_text_length(self->te_passwd) + 1];
   strcpy(buf, gtk_entry_get_text(self->te_passwd));
   if (g_str_is_ascii(buf)) {
-    compute_entropy(buf, self->dict, self->dict_words, self->ls_decomp, self->label_info, self->graphfile);
+    compute_entropy(self->ls_decomp, self->label_info, self->dict, self->dict_words, buf, self->graphfile);
   } else {
     gtk_label_set_text(self->label_info, "Only ASCII characters are supported.");
   }
@@ -375,7 +394,7 @@ pwcheck_gtk_window_init(PwcheckGtkWindow *self)
   exit(-1);
 
 go_on:
-  self->dict = dictionary_new(&self->dict_words, &self->dict_nodes, fd);
+  self->dict = dictionary_new(&self->dict_words, fd);
   fclose(fd);
 
   /*
@@ -383,6 +402,7 @@ go_on:
    */
   start_computation(self);
 }
+
 
 
 

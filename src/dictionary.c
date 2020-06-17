@@ -61,8 +61,7 @@ char normalize_letter(char c) {
 
 
 
-dictionary *dictionary_new_node(long *dict_nodes) {
-  (*dict_nodes)++;
+dictionary *dictionary_new_node() {
   dictionary *dict = malloc(sizeof(dictionary));
   for (int i = 0 ; i < 26; i++) {
     dict->next[i] = NULL;
@@ -84,12 +83,12 @@ void dictionary_free(dictionary *dict) {
 
 
 
-void dictionary_add(dictionary *dict, char *word, long *dict_words, long *dict_nodes) {
+void dictionary_add(dictionary *dict, char *word, long *dict_words) {
   (*dict_words)++;
   for (const char *c = word; normalize_letter(*c) != '\0'; c++) {
     int i = normalize_letter(*c) - 'a';
     if (dict->next[i] == NULL) {
-      dict->next[i] = dictionary_new_node(dict_nodes);
+      dict->next[i] = dictionary_new_node();
     }
     dict = dict->next[i];
   }
@@ -98,11 +97,11 @@ void dictionary_add(dictionary *dict, char *word, long *dict_words, long *dict_n
 
 
 
-dictionary *dictionary_new(long *dict_words, long *dict_nodes, FILE *fd) {
-  dictionary *dict = dictionary_new_node(dict_nodes);
+dictionary *dictionary_new(long *dict_words, FILE *fd) {
+  dictionary *dict = dictionary_new_node();
   char buf[100];
   while (fgets(buf, 100, fd)) {
-    dictionary_add(dict, buf, dict_words, dict_nodes);
+    dictionary_add(dict, buf, dict_words);
   }
   return dict;
 }
