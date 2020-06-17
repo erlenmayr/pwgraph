@@ -51,3 +51,10 @@ double rate_kbp(int len);
 
 
 
+/*
+ *  Computes the charset of a string.
+ */
+int compute_charset(char *str);
+
+
+

@@ -28,20 +28,15 @@
 
 
 /*
- *  Flags for character sets, SC are non-alphanumeric characters.
- */
-#define FLAG_az 0x1
-#define FLAG_AZ 0x2
-#define FLAG_09 0x4
-#define FLAG_SC 0x8
-
-
-
-/*
  * TODO: implement without cached file
  * TODO: make dot work in Flatpak
  */
-void graphviz(graph *G, char *str, int *path, char *graphfile) {
+void
+graphviz(graph *G,
+         char  *str,
+         int   *path,
+         char  *graphfile)
+{
   char *command = g_strdup_printf("dot -Tsvg > %s", graphfile);
   FILE *dot = popen(command, "w");
   graph_print(dot, G, str, path);
@@ -55,9 +50,9 @@ void graphviz(graph *G, char *str, int *path, char *graphfile) {
  *  Prints information about the password to a GtkLabel.
  */
 void
-print_rating(double   entropy,
-             int      len,
-             GtkLabel *label)
+print_rating(GtkLabel *label,
+             double    entropy,
+             int       len)
 {
   char *buf = g_strdup_printf("You password entropy: %.1f bits\n"
                               "Maximum entropy for length %d: %.1f bits\n",
@@ -70,42 +65,7 @@ print_rating(double   entropy,
 
 
 
-/*
- *  Computes the charset of a string.
- */
-int
-compute_charset(char *str)
-{
-  char flags = 0;
-  for (char *c = str; *c != '\0'; c++) {
-    if ('a' <= *c && *c <= 'z') {
-      flags |= FLAG_az;
-    } else if ('A' <= *c && *c <='Z') {
-      flags |= FLAG_AZ;
-    } else if ('0' <= *c && *c <= '9') {
-      flags |= FLAG_09;
-    } else {
-      flags |= FLAG_SC;
-    }
-  }
 
-  int charset = 0;
-  if (flags & FLAG_az) {
-    charset += 26;
-  }
-  if (flags & FLAG_AZ) {
-    charset += 26;
-  }
-  if (flags & FLAG_09) {
-    charset += 10;
-  }
-  if (flags & FLAG_SC) {
-    // number of ASCII chars which are neither letters nor digits
-    charset += 32;
-  }
-
-  return charset;
-}
 
 
 
@@ -119,13 +79,14 @@ compute_charset(char *str)
  *  int factor the number of random characters are following in a row
  */
 void
-list_store_append_substring(const char   *str,
-                            int          u,
-                            int          v,
+list_store_append_substring(GtkListStore *ls,
                             graph        *G,
-                            int          len,
-                            GtkListStore *ls)
+                            const char   *str,
+                            int           u,
+                            int           v,
+                            int           len)
 {
+  GTK_IS_LIST_STORE(ls);
   char *cat, *formula;
   int pathlen = v - u;
   double entropy = G->edge[u][v];
@@ -188,8 +149,8 @@ struct _PwcheckGtkWindow
   GtkImage            *im_graph;
   GtkLabel            *label_info;
   dictionary          *dict;
-  long                dict_words;
-  long                dict_nodes;
+  long                 dict_words;
+  long                 dict_nodes;
   gchar               *graphfile;
   GtkButton           *bn_about;
   GtkWidget           *about;
@@ -208,7 +169,7 @@ G_DEFINE_TYPE(PwcheckGtkWindow, pwcheck_gtk_window, GTK_TYPE_APPLICATION_WINDOW)
 double
 compute_entropy(char         *word,
                 dictionary   *dict,
-                long         dict_words,
+                long          dict_words,
                 GtkListStore *ls,
                 GtkLabel     *label,
                 gchar        *graphfile)
@@ -258,13 +219,13 @@ compute_entropy(char         *word,
   for (; i > 0; i--) {
     int j;
     for (j = i; j > 0 && path[j - 1] == path[j] + 1; j--);
-    list_store_append_substring(word, path[i], path[i - 1], G, i - j, ls);
+    list_store_append_substring(ls, G, word, path[i], path[i - 1], i - j);
     if (i != j) {
       i = j + 1;
     }
   }
 
-  print_rating(entropy, n, label);
+  print_rating(label, entropy, n);
 
   graphviz(G, word, path, graphfile);
   graph_free(G);

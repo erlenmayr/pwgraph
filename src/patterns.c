@@ -16,11 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "patterns.h"
+
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
-
-#include "patterns.h"
 
 
 
@@ -205,6 +205,52 @@ int find_kbp(char *str) {
 double rate_kbp(int len) {
   double entropy = log2(47) + (len - 1) * log2(9);
   return entropy;
+}
+
+
+
+/*
+ *  Flags for character sets, SC are non-alphanumeric characters.
+ */
+#define FLAG_az 0x1
+#define FLAG_AZ 0x2
+#define FLAG_09 0x4
+#define FLAG_SC 0x8
+/*
+ *  Computes the charset size for a string.
+ */
+int
+compute_charset(char *str)
+{
+  char flags = 0;
+  for (char *c = str; *c != '\0'; c++) {
+    if ('a' <= *c && *c <= 'z') {
+      flags |= FLAG_az;
+    } else if ('A' <= *c && *c <='Z') {
+      flags |= FLAG_AZ;
+    } else if ('0' <= *c && *c <= '9') {
+      flags |= FLAG_09;
+    } else {
+      flags |= FLAG_SC;
+    }
+  }
+
+  int charset = 0;
+  if (flags & FLAG_az) {
+    charset += 26;
+  }
+  if (flags & FLAG_AZ) {
+    charset += 26;
+  }
+  if (flags & FLAG_09) {
+    charset += 10;
+  }
+  if (flags & FLAG_SC) {
+    // number of ASCII chars which are neither letters nor digits
+    charset += 32;
+  }
+
+  return charset;
 }
 
 
