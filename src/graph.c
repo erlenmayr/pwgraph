@@ -127,7 +127,7 @@ graph_compute_path(graph *G,
 void
 graph_print_dot(graph *G,
                 FILE  *file,
-                char  *str,
+                char  *word,
                 int   *path)
 {
   fprintf(file, "digraph G {\n"
@@ -138,10 +138,10 @@ graph_print_dot(graph *G,
   for (int u = 0; u < G->n; u++) {
     for (int v = 0; v < G->n; v++) {
       if (G->edge[u][v] < INFINITY) {
-        char buf[strlen(str) * 2 + 1];
+        char buf[strlen(word) * 2 + 1];
         int i;
         char *c;
-        for (i = 0, c = str + u; i < v - u; i++, c++) {
+        for (i = 0, c = word + u; i < v - u; i++, c++) {
           if (*c == '\"') {
             buf[i] = '\\';
             buf[++i] = '\"';

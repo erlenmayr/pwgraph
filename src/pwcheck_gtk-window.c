@@ -19,11 +19,11 @@
 #include "pwcheck_gtk-config.h"
 #include "pwcheck_gtk-window.h"
 
-#include <math.h>
-
 #include "dictionary.h"
 #include "patterns.h"
 #include "graph.h"
+
+#include <math.h>
 
 
 
@@ -146,7 +146,6 @@ list_store_append_substring(GtkListStore *ls,
 
 
 
-
 /**
  * compute_entropy:
  * @ls: the list store for the result
@@ -164,24 +163,21 @@ double
 compute_entropy(GtkListStore *ls,
                 GtkLabel     *label,
                 dictionary   *dict,
-                long          dict_words,
                 char         *word,
                 gchar        *graphfile)
 {
   int n = strlen(word);
   int charset = compute_charset(word);
   graph *G = graph_new(n + 1, log2(charset));
-  long rep_nodes = 0;
-  long rep_size = 0;
-  dictionary *repetitions = dict_new(&rep_nodes);
+  dictionary *repetitions = dict_new();
 
   for (char *c = word; *c != '\0'; c++) {
     int seqlen = find_seq(c);
     int kbplen = find_kbp(c);
     int wrdlen[n];
-    int wrdcnt = dict_find_wrd(dict, c, wrdlen, n);
+    int wrdcnt = dict_find_wrd(dict, c, wrdlen);
     int replen[n];
-    int repcnt = dict_find_wrd(repetitions, c, replen, n);
+    int repcnt = dict_find_wrd(repetitions, c, replen);
 
     for (int i = 3; i <= seqlen; i++) {
       graph_update_edge(G, c - word, c - word + i, rate_seq(*c, i), SEQ);
@@ -190,17 +186,17 @@ compute_entropy(GtkListStore *ls,
       graph_update_edge(G, c - word, c - word + i, rate_kbp(i), KBP);
     }
     for (int i = 0; i < wrdcnt; i++) {
-      graph_update_edge(G, c - word, c - word + wrdlen[i], dict_rate_wrd(dict_words), WRD);
+      graph_update_edge(G, c - word, c - word + wrdlen[i], dict_rate_wrd(dict), WRD);
     }
     for (int i = 0; i < repcnt; i++) {
-      graph_update_edge(G, c - word, c - word + replen[i], dict_rate_wrd(rep_size + 1), REP);
+      graph_update_edge(G, c - word, c - word + replen[i], dict_rate_wrd(repetitions), REP);
     }
 
     for (int i = 0; i < c - word; i++) {
       char rep[c - word - i + 1];
       strncpy(rep, word + i, c - word - i + 1);
       rep[c - word - i + 1] = '\0';
-      dict_add_word(repetitions, rep, &rep_size);
+      dict_add_word(repetitions, rep);
     }
   }
 
@@ -242,8 +238,6 @@ struct _PwcheckGtkWindow
   GtkImage            *im_graph;
   GtkLabel            *label_info;
   dictionary          *dict;
-  long                 dict_words;
-  long                 dict_nodes;
   gchar               *graphfile;
   GtkButton           *bn_about;
   GtkWidget           *about;
@@ -282,7 +276,7 @@ start_computation(PwcheckGtkWindow *self)
   gchar buf[gtk_entry_get_text_length(self->te_passwd) + 1];
   strcpy(buf, gtk_entry_get_text(self->te_passwd));
   if (g_str_is_ascii(buf)) {
-    compute_entropy(self->ls_decomp, self->label_info, self->dict, self->dict_words, buf, self->graphfile);
+    compute_entropy(self->ls_decomp, self->label_info, self->dict, buf, self->graphfile);
   } else {
     gtk_label_set_text(self->label_info, "Only ASCII characters are supported.");
   }
@@ -394,7 +388,7 @@ pwcheck_gtk_window_init(PwcheckGtkWindow *self)
   exit(-1);
 
 go_on:
-  self->dict = dict_new_from_file(fd, &self->dict_words);
+  self->dict = dict_new_from_file(fd);
   fclose(fd);
 
   /*
@@ -402,7 +396,6 @@ go_on:
    */
   start_computation(self);
 }
-
 
 
 

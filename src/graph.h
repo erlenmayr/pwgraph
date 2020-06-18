@@ -20,23 +20,28 @@
 
 
 
-/*
- *  Categories for the different types of substrings:
+/**
+ * category:
+ * @NON: no type
+ * @RND: random string
+ * @WRD: dictionary word
+ * @SEQ: sequence
+ * @KBP: keyboard pattern
+ * @REP: repetition
  *
- *  NON: no type
- *  RND: random string
- *  WRD: dictionary word
- *  SEQ: sequence
- *  KBP: keyboard pattern
- *  REP: repetition
+ * Categories for the different types of substrings.
  */
 typedef enum {NON, RND, WRD, SEQ, KBP, REP} category;
 
 
 
-/*
+/**
+ * graph:
+ * @n: size, i.e. number of nodes
+ * @edge: weighted edges
+ * @cat: category for each edge
+ *
  * Adjacency matrix representing the graph.
- * TODO: separate struct from type
  */
 typedef struct {
   int n;
@@ -57,34 +62,53 @@ graph *graph_new(int n, double weight);
 
 
 
-/*
- *  Frees a graph's memory.
+/**
+ * graph_free:
+ * @G: the graph
+ *
+ * Frees a graph's memory.
  */
 void graph_free(graph *G);
 
 
 
-/*
- *  Updates a graph edge, if the new weight is less than the previous weight.
+/**
+ * graph_update_edge:
+ * @G: the graph
+ * @u: starting node of the edge
+ * @v: end node of the edge
+ * @weight: weight of the edge (i.e. entropy)
+ * @cat: category of the edge
+ *
+ * Updates a graph edge, if the new weight is less than the previous weight.
  */
 void graph_update_edge(graph *G, int u, int v, double weight, category cat);
 
 
 
-/*
- *  Computes the shortes path from node 1 to node n.
+/**
+ * graph_compute_path:
+ * @G: the graph
+ * @path: integer array representing the path
  *
- *  int *path:   string array of size n containing the path
- *  All empty:   fields are set to -1.
+ * Computes the shortes path from node 1 to node n.
+ *
+ * Returns: The path's combined entropy.
  */
 double graph_compute_path(graph *G, int *path);
 
 
 
-/*
- *  Prints out a graph in dot format to a file.
+/**
+ * graph_print_dot:
+ * @G: the graph
+ * @file: the stream to print the dot output to
+ * @word: the password for edge tags
+ * @path: the path to highlight
+ *
+ * Prints out a graph in dot format to a file.
  */
-void graph_print_dot(graph *G, FILE *file, char *str, int *path);
+void graph_print_dot(graph *G, FILE *file, char *word, int *path);
 
 
 

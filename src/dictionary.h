@@ -20,73 +20,77 @@
 
 
 
-/*
- *  Represents a dictionary.
- *  Implemented as a tree of prefixes for efficient matching.
+/**
+ * dictionary:
+ *
+ * Represents a dictionary, implemented as a tree of prefixes for efficient matching.
  */
-typedef struct dictionary {
-  struct dictionary *next[26];
-  int end;
-} dictionary;
+typedef struct _dictionary dictionary;
 
 
-/*
- * TODO: docs
+
+/**
+ * dict_new:
+ *
+ * Creates a new dictionary (i.e. tree node).
  */
 dictionary *dict_new();
 
 
 
-/*
- *  Initializes and returns a new dictionary based on the file
- *  represented by *fd.
+/**
+ * dict_new_from_file:
+ * @fd: a text file with one word per line
  *
- *  int *dict_words:  word counter for dictionary statistics
+ * Initializes and returns a new dictionary based on the file represented by *fd.
  */
-dictionary *dict_new_from_file(FILE *fd, long *dict_words);
+dictionary *dict_new_from_file(FILE *fd);
 
 
 
-/*
- *  Recursively frees the memory of a dictionary.
+/**
+ * dict_free:
+ * *dict: the dictionary
+ *
+ * Recursively frees the memory of a dictionary.
  */
 void dict_free(dictionary *dict);
 
 
 
-/*
- *  Adds a single word to the dictionary. Stops at non-letter characters.
+/**
+ * dict_add_word:
+ * @dict: the dictionary
+ * @word: the word to add
  * 
- *  int *dict_words:  word counter for dictionary statistics
+ * Adds a single word to the dictionary. Stops at non-letter characters.
  */
-void dict_add_word(dictionary *dict, char *word, long *dict_words);
+void dict_add_word(dictionary *dict, char *word);
 
 
 
-/*
- *  Finds dictionary words in a string.
+/**
+ * dict_find_wrd:
+ * @dict: the dictionary
+ * @word: the string to be searched
+ * @matches: array to be filled with the lengths of all matches
  *
- *  dictionary *dict:  the dictionary
- *  char *str:         the string to be searched
- *  int *length:       array to be filled with the lengths of all matches
+ * Finds dictionary words in a string.
  *
- *  return:            number of matches (entries in the integer array length)
+ * Returns: number of matches (entries in the integer array length)
+ *
  */
-int dict_find_wrd(dictionary *dict, char *str, int *lengths, int n);
+int dict_find_wrd(dictionary *dict, char *word, int *matches);
 
 
 
-/*
- *  returns the entropy of a dictionary word
+/**
+ * dict_rate_wrd:
+ * @dict: the dictionary
+ *
+ * Computes the entropy of a dictionary word.
  */
-double dict_rate_wrd(long dict_words);
-
-
-
-/*
- *  Normalizes a letter (including 1337) to lower case.
- */
-char normalize_letter(char c);
+double dict_rate_wrd(dictionary *dict);
 
 
 
