@@ -44,15 +44,21 @@ int find_kbp(char *str);
 
 
 
-/*
- *  Returns the entropy of a keyboard pattern.
+/**
+ * rate_kbp:
+ * @len: length of the keyboard pattern
+ *
+ * Returns the entropy of a keyboard pattern for a length.
  */
 double rate_kbp(int len);
 
 
 
-/*
- *  Computes the charset of a string.
+/**
+ * compute_charset:
+ * @str: the string
+ *
+ * Computes the charset of a string.
  */
 int compute_charset(char *str);
 

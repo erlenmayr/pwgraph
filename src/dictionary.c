@@ -25,7 +25,103 @@
 
 
 
-char normalize_letter(char c) {
+dictionary *
+dict_new()
+{
+  dictionary *dict = malloc(sizeof(dictionary));
+  for (int i = 0 ; i < 26; i++) {
+    dict->next[i] = NULL;
+  }
+  dict->end = 0;
+  return dict;
+}
+
+
+
+dictionary *
+dict_new_from_file(FILE *fd,
+                   long *dict_words)
+{
+  dictionary *dict = dict_new();
+  char buf[100];
+  while (fgets(buf, 100, fd)) {
+    dict_add_word(dict, buf, dict_words);
+  }
+  return dict;
+}
+
+
+
+void
+dict_free(dictionary *dict)
+{
+  for (int i = 0 ; i < 26; i++) {
+    if (dict->next[i] != NULL) {
+      dict_free(dict->next[i]);
+    }
+  }
+  free(dict);
+}
+
+
+
+void
+dict_add_word(dictionary *dict,
+              char       *word,
+              long       *dict_words)
+{
+  (*dict_words)++;
+  for (const char *c = word; normalize_letter(*c) != '\0'; c++) {
+    int i = normalize_letter(*c) - 'a';
+    if (dict->next[i] == NULL) {
+      dict->next[i] = dict_new();
+    }
+    dict = dict->next[i];
+  }
+  dict->end = 1;
+}
+
+
+
+int
+dict_find_wrd(dictionary *dict,
+              char       *str,
+              int        *lengths,
+              int         n)
+{
+  int len = 0;
+  int cnt = 0;
+  for (char *c = str; normalize_letter(*c) != '\0'; c++) {
+    int i = normalize_letter(*c) - 'a';
+    if (!(dict->next[i])) {
+      break;
+    }
+    len++;
+    dict = dict->next[i];
+    if (c - str > 0 && dict->end) {
+      lengths[cnt] = len;
+      cnt++;
+    }
+  }
+  for (int i = cnt; i < n; i++) {
+    lengths[i] = 0;
+  }
+  return cnt;
+}
+
+
+
+double
+dict_rate_wrd(long dict_words)
+{
+  return log2(dict_words);
+}
+
+
+
+char
+normalize_letter(char c)
+{
   if ('a' <= c && c <= 'z') {
     return c;
   } else if ('A' <= c && c <= 'Z') {
@@ -56,83 +152,6 @@ char normalize_letter(char c) {
     }
   }
   return '\0';
-}
-
-
-
-
-dictionary *dictionary_new_node() {
-  dictionary *dict = malloc(sizeof(dictionary));
-  for (int i = 0 ; i < 26; i++) {
-    dict->next[i] = NULL;
-  }
-  dict->end = 0;
-  return dict;
-}
-
-
-
-void dictionary_free(dictionary *dict) {
-  for (int i = 0 ; i < 26; i++) {
-    if (dict->next[i] != NULL) {
-      dictionary_free(dict->next[i]);
-    }
-  }
-  free(dict);
-}
-
-
-
-void dictionary_add(dictionary *dict, char *word, long *dict_words) {
-  (*dict_words)++;
-  for (const char *c = word; normalize_letter(*c) != '\0'; c++) {
-    int i = normalize_letter(*c) - 'a';
-    if (dict->next[i] == NULL) {
-      dict->next[i] = dictionary_new_node();
-    }
-    dict = dict->next[i];
-  }
-  dict->end = 1;
-}
-
-
-
-dictionary *dictionary_new(long *dict_words, FILE *fd) {
-  dictionary *dict = dictionary_new_node();
-  char buf[100];
-  while (fgets(buf, 100, fd)) {
-    dictionary_add(dict, buf, dict_words);
-  }
-  return dict;
-}
-
-
-
-int find_wrd(dictionary *dict, char *str, int *lengths, int n) {
-  int len = 0;
-  int cnt = 0;
-  for (char *c = str; normalize_letter(*c) != '\0'; c++) {
-    int i = normalize_letter(*c) - 'a';
-    if (!(dict->next[i])) {
-      break;
-    }
-    len++;
-    dict = dict->next[i];
-    if (c - str > 0 && dict->end) {
-      lengths[cnt] = len;
-      cnt++;
-    }
-  }
-  for (int i = cnt; i < n; i++) {
-    lengths[i] = 0;
-  }
-  return cnt;
-}
-
-
-
-double rate_wrd(long dict_words) {
-  return log2(dict_words);
 }
 
 

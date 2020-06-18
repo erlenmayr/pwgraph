@@ -30,25 +30,27 @@ typedef struct dictionary {
 } dictionary;
 
 
+/*
+ * TODO: docs
+ */
+dictionary *dict_new();
+
+
 
 /*
- *  Normalizes a letter (including 1337) to lower case.
+ *  Initializes and returns a new dictionary based on the file
+ *  represented by *fd.
+ *
+ *  int *dict_words:  word counter for dictionary statistics
  */
-char normalize_letter(char c);
-
-
-
-/*
- * Allocates a new node for the dictionary.
- */
-dictionary *dictionary_new_node();
+dictionary *dict_new_from_file(FILE *fd, long *dict_words);
 
 
 
 /*
  *  Recursively frees the memory of a dictionary.
  */
-void dictionary_free(dictionary *dict);
+void dict_free(dictionary *dict);
 
 
 
@@ -57,17 +59,7 @@ void dictionary_free(dictionary *dict);
  * 
  *  int *dict_words:  word counter for dictionary statistics
  */
-void dictionary_add(dictionary *dict, char *word, long *dict_words);
-
-
-
-/*
- *  Initializes and returns a new dictionary based on the file
- *  represented by *fd.
- * 
- *  int *dict_words:  word counter for dictionary statistics
- */
-dictionary *dictionary_new(long *dict_words, FILE *fd);
+void dict_add_word(dictionary *dict, char *word, long *dict_words);
 
 
 
@@ -80,14 +72,21 @@ dictionary *dictionary_new(long *dict_words, FILE *fd);
  *
  *  return:            number of matches (entries in the integer array length)
  */
-int find_wrd(dictionary *dict, char *str, int *lengths, int n);
+int dict_find_wrd(dictionary *dict, char *str, int *lengths, int n);
 
 
 
 /*
  *  returns the entropy of a dictionary word
  */
-double rate_wrd(long dict_words);
+double dict_rate_wrd(long dict_words);
+
+
+
+/*
+ *  Normalizes a letter (including 1337) to lower case.
+ */
+char normalize_letter(char c);
 
 
 

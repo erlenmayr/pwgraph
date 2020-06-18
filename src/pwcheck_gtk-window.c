@@ -45,7 +45,7 @@ graphviz(graph *G,
 {
   char *command = g_strdup_printf("dot -Tsvg > %s", graphfile);
   FILE *dot = popen(command, "w");
-  graph_print(dot, G, word, path);
+  graph_print_dot(G, dot, word, path);
   fclose(dot);
   g_free(command);
 }
@@ -173,15 +173,15 @@ compute_entropy(GtkListStore *ls,
   graph *G = graph_new(n + 1, log2(charset));
   long rep_nodes = 0;
   long rep_size = 0;
-  dictionary *repetitions = dictionary_new_node(&rep_nodes);
+  dictionary *repetitions = dict_new(&rep_nodes);
 
   for (char *c = word; *c != '\0'; c++) {
     int seqlen = find_seq(c);
     int kbplen = find_kbp(c);
     int wrdlen[n];
-    int wrdcnt = find_wrd(dict, c, wrdlen, n);
+    int wrdcnt = dict_find_wrd(dict, c, wrdlen, n);
     int replen[n];
-    int repcnt = find_wrd(repetitions, c, replen, n);
+    int repcnt = dict_find_wrd(repetitions, c, replen, n);
 
     for (int i = 3; i <= seqlen; i++) {
       graph_update_edge(G, c - word, c - word + i, rate_seq(*c, i), SEQ);
@@ -190,17 +190,17 @@ compute_entropy(GtkListStore *ls,
       graph_update_edge(G, c - word, c - word + i, rate_kbp(i), KBP);
     }
     for (int i = 0; i < wrdcnt; i++) {
-      graph_update_edge(G, c - word, c - word + wrdlen[i], rate_wrd(dict_words), WRD);
+      graph_update_edge(G, c - word, c - word + wrdlen[i], dict_rate_wrd(dict_words), WRD);
     }
     for (int i = 0; i < repcnt; i++) {
-      graph_update_edge(G, c - word, c - word + replen[i], rate_wrd(rep_size + 1), REP);
+      graph_update_edge(G, c - word, c - word + replen[i], dict_rate_wrd(rep_size + 1), REP);
     }
 
     for (int i = 0; i < c - word; i++) {
       char rep[c - word - i + 1];
       strncpy(rep, word + i, c - word - i + 1);
       rep[c - word - i + 1] = '\0';
-      dictionary_add(repetitions, rep, &rep_size);
+      dict_add_word(repetitions, rep, &rep_size);
     }
   }
 
@@ -223,7 +223,7 @@ compute_entropy(GtkListStore *ls,
 
   graphviz(G, word, path, graphfile);
   graph_free(G);
-  dictionary_free(repetitions);
+  dict_free(repetitions);
   return entropy;
 }
 
@@ -394,7 +394,7 @@ pwcheck_gtk_window_init(PwcheckGtkWindow *self)
   exit(-1);
 
 go_on:
-  self->dict = dictionary_new(&self->dict_words, fd);
+  self->dict = dict_new_from_file(fd, &self->dict_words);
   fclose(fd);
 
   /*

@@ -25,7 +25,10 @@
 
 
 
-graph *graph_new(int n, double weight) {
+graph *
+graph_new(int    n,
+          double weight)
+{
   graph *G = malloc(sizeof(graph));
   G->n = n;
   G->edge = malloc(n * sizeof(double *));
@@ -48,7 +51,9 @@ graph *graph_new(int n, double weight) {
 
 
 
-void graph_free(graph *G) {
+void
+graph_free(graph *G)
+{
   if (G) {
     if (G->edge) {
       for (int u = 0; u < G->n; u++) {
@@ -68,7 +73,13 @@ void graph_free(graph *G) {
 
 
 
-void graph_update_edge(graph *G, int u, int v, double weight, category cat) {
+void
+graph_update_edge(graph    *G,
+                  int       u,
+                  int       v,
+                  double    weight,
+                  category  cat)
+{
   if (G->edge[u][v] > weight) {
     G->edge[u][v] = weight;
     G->cat[u][v] = cat;
@@ -77,7 +88,10 @@ void graph_update_edge(graph *G, int u, int v, double weight, category cat) {
 
 
 
-double graph_compute_path(graph *G, int *path) {
+double
+graph_compute_path(graph *G,
+                   int   *path)
+{
   // dist[u]: distance from node u to node n
   double dist[G->n];
   // dist[u]: predecessor of node n
@@ -110,7 +124,12 @@ double graph_compute_path(graph *G, int *path) {
 
 
 
-void graph_print(FILE *file, graph *G, char *str, int *path) {
+void
+graph_print_dot(graph *G,
+                FILE  *file,
+                char  *str,
+                int   *path)
+{
   fprintf(file, "digraph G {\n"
                 "\tgraph [bgcolor=\"transparent\"];\n"
                 "\tedge [fontname = \"cantarell\", fontsize=10];\n"

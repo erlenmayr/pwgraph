@@ -35,7 +35,8 @@ typedef enum {NON, RND, WRD, SEQ, KBP, REP} category;
 
 
 /*
- *  Adjacency matrix representing the graph.
+ * Adjacency matrix representing the graph.
+ * TODO: separate struct from type
  */
 typedef struct {
   int n;
@@ -45,11 +46,12 @@ typedef struct {
 
 
 
-/*
- *  Allocates and returns a new graph.
+/**
+ * graph_new:
+ * @n: number of nodes
+ * @weight: default value for the edges on the path (1, 2, ..., n)
  *
- *  int n:           number of nodes
- *  double value:    default value for the edges on the path (1, 2, ..., n)
+ * Allocates and returns a new graph.
  */
 graph *graph_new(int n, double weight);
 
@@ -80,10 +82,9 @@ double graph_compute_path(graph *G, int *path);
 
 
 /*
- *  Prints out a graph to a file.
+ *  Prints out a graph in dot format to a file.
  */
-void graph_print(FILE *file, graph *G, char *str, int *path);
-
+void graph_print_dot(graph *G, FILE *file, char *str, int *path);
 
 
 
