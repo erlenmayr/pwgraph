@@ -17,6 +17,7 @@
  */
 
 #include "dictionary.h"
+#include "patterns.h"
 
 #include <stdio.h>
 
