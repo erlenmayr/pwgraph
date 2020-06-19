@@ -17,9 +17,7 @@
  */
 
 #include "pwcheck_gtk-window.h"
-
 #include "graph.h"
-
 #include <math.h>
 
 
@@ -54,50 +52,42 @@ const char *formula[] = {
 
 
 /**
- * list_store_append_substring:
- * @ls: list store to append the result to
- * @G: the whole graph
- * @word: the whole password string for output purposes
- * @u: the node that starts the substring
- * @v: the node that ends the substring
- * @pathlen: the number of random characters in a row
+ * list_store_set_decomposition:
+ * @ls: list store to put the decomposition into
+ * @G: the password graph
  *
- *  Prints the result line for a substring starting at u, ending at v
+ *  Puts the decomposition of the graph's shortest path into a GtkListStore
  */
 void
-list_store_append_substring(GtkListStore *ls,
-                            graph        *G,
-                            const char   *word,
-                            int           u,
-                            int           v,
-                            int           pathlen)
+list_store_set_decomposition(GtkListStore *ls,
+                             graph        *G)
 {
   GTK_IS_LIST_STORE(ls);
-  double entropy = G->edge[u][v];
-  int sublen = v - u;
-  if (G->cat[u][v] == RND) {
-    sublen = pathlen;
-    entropy *= pathlen;
+  gtk_list_store_clear(ls);
+  char buf[strlen(G->word)];
+  for (int i = 0; i < G->n - 1; i++) {
+    if (G->path[i] < 0) {
+      continue;
+    }
+    GtkTreeIter iter;
+    int len = G->path[i + 1] - G->path[i];
+    strncpy(buf, G->word + G->path[i], len);
+    buf[len] = '\0';
+    gtk_list_store_append(ls, &iter);
+    gtk_list_store_set(ls, &iter,
+                       0, buf,
+                       1, name[G->cat[G->path[i]][G->path[i + 1]]],
+                       2, len,
+                       3, formula[G->cat[G->path[i]][G->path[i + 1]]],
+                       4, G->edge[G->path[i]][G->path[i + 1]],
+                       -1);
   }
-  char substring[sublen + 1];
-  strncpy(substring, word + u, sublen);
-  substring[sublen] = '\0';
-
-  GtkTreeIter iter;
-  gtk_list_store_append(ls, &iter);
-  gtk_list_store_set(ls, &iter,
-                     0, substring,
-                     1, name[G->cat[u][v]],
-                     2, sublen,
-                     3, formula[G->cat[u][v]],
-                     4, entropy,
-                     -1);
 }
 
 
 
 /**
- * print_rating:
+ * label_set_rating:
  * @label: label to put the message to
  * @entropy: entropy result of the password
  * @len: length of the password
@@ -130,43 +120,22 @@ label_set_rating(GtkLabel *label,
  * @word: the password
  * @graphfile: path of the graph SVG image
  *
- * Computes and returns the entropy of the password.
+ * Computes the entropy of the password.
  */
-double
+void
 compute_entropy(GtkListStore *ls,
                 GtkLabel     *label,
                 dictionary   *dict,
                 char         *word,
                 gchar        *graphfile)
 {
-  int n = strlen(word);
-  int charset = compute_charset(word);
-  graph *G = graph_new(n + 1, log2(charset));
-
-  graph_compute_edges(G, dict, word);
-
-
-  int path[G->n];
-  double entropy = graph_compute_path(G, path);
-
-  gtk_list_store_clear(ls);
-  int i;
-  for (i = G->n - 1; path[i] == -1; i--);
-  for (; i > 0; i--) {
-    int j;
-    for (j = i; j > 0 && path[j - 1] == path[j] + 1; j--);
-    list_store_append_substring(ls, G, word, path[i], path[i - 1], i - j);
-    if (i != j) {
-      i = j + 1;
-    }
-  }
-
-  label_set_rating(label, entropy, n);
-
-  graph_save_svg(G, word, path, graphfile);
+  graph *G = graph_new(word);
+  graph_compute_edges(G, dict);
+  double entropy =  graph_compute_path(G);
+  list_store_set_decomposition(ls, G);
+  label_set_rating(label, entropy, G->n);
+  graph_save_svg(G, graphfile);
   graph_free(G);
-
-  return entropy;
 }
 
 
@@ -216,6 +185,9 @@ draw_graph(PwcheckGtkWindow *self)
 
 
 
+/*
+ * Separate function because computation can be triggered multiple ways.
+ */
 static void
 start_computation(PwcheckGtkWindow *self)
 {
@@ -232,7 +204,7 @@ start_computation(PwcheckGtkWindow *self)
 
 
 /*
- *  widget callback functions
+ * Widget callback functions.
  */
 static void
 window_resized(GtkWidget        *sw,
@@ -308,7 +280,7 @@ pwcheck_gtk_window_init(PwcheckGtkWindow *self)
   gtk_widget_init_template(GTK_WIDGET(self));
 
   /*
-   * init cache directory
+   * Init cache directory and SVG path.
    */
   gchar *cachedir = g_build_path("/", g_get_user_cache_dir(), "pwcheck-gtk", NULL);
   g_mkdir_with_parents(cachedir, 0700);
@@ -316,7 +288,7 @@ pwcheck_gtk_window_init(PwcheckGtkWindow *self)
   self->graphfile = g_build_path("/", g_get_user_cache_dir(), "pwcheck-gtk", "pwgraph.svg", NULL);
 
   /*
-   * init dictionary
+   * Init dictionary.
    * TODO: make this work in ~/.cache/gnome-builder/install
    */
   const gchar *const *dirs = g_get_system_data_dirs();
@@ -338,7 +310,7 @@ go_on:
   fclose(fd);
 
   /*
-   * draw a start screen
+   * Draw the preview demo.
    */
   start_computation(self);
 }

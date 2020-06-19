@@ -59,18 +59,20 @@ typedef struct {
   double **edge;
   category **cat;
   int *path;
+  char *word;
 } graph;
 
 
 
 /**
  * graph_new:
- * @n: number of nodes
- * @weight: default value for the edges on the path (1, 2, ..., n)
+ * @word: the password
  *
- * Allocates and returns a new graph.
+ * Creates a new graph from a password.
+ *
+ * Returns: the graph
  */
-graph *graph_new(int n, double weight);
+graph *graph_new(char *word);
 
 
 
@@ -99,15 +101,25 @@ void graph_update_edge(graph *G, int u, int v, double weight, category cat);
 
 
 /**
+ * graph_compute_edges:
+ * @G: the graph
+ * @dict: the dictionary
+ *
+ * Computes the edges in a graph for a password
+ */
+void graph_compute_edges(graph *G, dictionary *dict);
+
+
+
+/**
  * graph_compute_path:
  * @G: the graph
- * @path: integer array representing the path
  *
- * Computes the shortes path from node 1 to node n.
+ * Computes the shortes path from node 1 to node n using Dijkstra's algorithm.
  *
  * Returns: The path's combined entropy.
  */
-double graph_compute_path(graph *G, int *path);
+double graph_compute_path(graph *G);
 
 
 
@@ -115,38 +127,22 @@ double graph_compute_path(graph *G, int *path);
  * graph_print_dot:
  * @G: the graph
  * @file: the stream to print the dot output to
- * @word: the password for edge tags
- * @path: the path to highlight
  *
  * Prints out a graph in dot format to a file.
  */
-void graph_print_dot(graph *G, FILE *file, char *word, int *path);
+void graph_print_dot(graph *G, FILE *file);
 
 
 
 /**
  * graphviz:
  * @G: the graph to paint
- * @word: the password
- * @path: the path on the graph to highlight
  * @graphfile: path of the graph SVG image
  *
  * TODO: implement without cached file
  * TODO: make dot work in Flatpak
  */
-void graph_save_svg(graph *G, char *word, int *path, char *graphfile);
-
-
-
-/**
- * graph_compute_edges:
- * @G: the graph
- * @dict: the dictionary
- * @word: the password
- *
- * Computes the edges in a graph for a password
- */
-void graph_compute_edges(graph *G, dictionary *dict, char *word);
+void graph_save_svg(graph *G, char *graphfile);
 
 
 

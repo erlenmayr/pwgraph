@@ -27,18 +27,21 @@
 
 
 graph *
-graph_new(int    n,
-          double weight)
+graph_new(char *word)
 {
   graph *G = malloc(sizeof(graph));
-  G->n = n;
-  G->edge = malloc(n * sizeof(double *));
-  G->cat = malloc(n * sizeof(category *));
-  for (int u = 0; u < n; u++) {
-    G->edge[u] = malloc(n * sizeof(double));
-    G->cat[u] = malloc(n * sizeof(category));
-    for (int v = 0; v < n; v++) {
-      if (u < n - 1 && u + 1 == v) {
+  G->n = strlen(word) + 1;
+  double weight = log2(compute_charset(word));
+  G->edge = malloc(G->n * sizeof(double *));
+  G->cat = malloc(G->n * sizeof(category *));
+  G->path = malloc(G->n * sizeof(int));
+  G->word = word;
+  for (int u = 0; u < G->n; u++) {
+    G->edge[u] = malloc(G->n * sizeof(double));
+    G->cat[u] = malloc(G->n * sizeof(category));
+    G->path[u] = -1;
+    for (int v = 0; v < G->n; v++) {
+      if (u < G->n - 1 && u + 1 == v) {
         G->edge[u][v] = weight;
         G->cat[u][v] = RND;
       } else {
@@ -68,6 +71,9 @@ graph_free(graph *G)
       }
       free(G->cat);
     }
+    if (G->path) {
+      free(G->path);
+    }
     free(G);
   }
 }
@@ -90,8 +96,7 @@ graph_update_edge(graph    *G,
 
 
 double
-graph_compute_path(graph *G,
-                   int   *path)
+graph_compute_path(graph *G)
 {
   // dist[u]: distance from node u to node n
   double dist[G->n];
@@ -113,23 +118,25 @@ graph_compute_path(graph *G,
     }
   }
   int j = 0;
+  int buf[G->n];
   for (int i = G->n - 1; i >= 0; i = pred[i], j++) {
-    path[j] = i;
+    buf[j] = i;
   }
   for ( ; j < G->n; j++) {
-    path[j] = -1;
+    buf[j] = -1;
   }
-  double entropy = dist[G->n - 1];
-  return entropy;
+  for (int i = 0; i < G->n; i++) {
+    G->path[i] = buf[G->n - i - 1];
+  }
+  /* shortest path's entropy */
+  return dist[G->n - 1];
 }
 
 
 
 void
 graph_print_dot(graph *G,
-                FILE  *file,
-                char  *word,
-                int   *path)
+                FILE  *file)
 {
   fprintf(file, "digraph G {\n"
                 "\tgraph [bgcolor=\"transparent\"];\n"
@@ -139,10 +146,10 @@ graph_print_dot(graph *G,
   for (int u = 0; u < G->n; u++) {
     for (int v = 0; v < G->n; v++) {
       if (G->edge[u][v] < INFINITY) {
-        char buf[strlen(word) * 2 + 1];
+        char buf[strlen(G->word) * 2 + 1];
         int i;
         char *c;
-        for (i = 0, c = word + u; i < v - u; i++, c++) {
+        for (i = 0, c = G->word + u; i < v - u; i++, c++) {
           if (*c == '\"') {
             buf[i] = '\\';
             buf[++i] = '\"';
@@ -153,7 +160,7 @@ graph_print_dot(graph *G,
         buf[i] = '\0';
         char *style = "";
         for (int i = 0; i < G->n - 1; i++) {
-          if (path[i + 1] == u && path[i] == v) {
+          if (G->path[i] == u && G->path[i + 1] == v) {
             style = ", penwidth=3";
           }
         }
@@ -185,13 +192,11 @@ graph_print_dot(graph *G,
 
 void
 graph_save_svg(graph *G,
-         char  *word,
-         int   *path,
-         char  *graphfile)
+               char  *graphfile)
 {
   char *command = g_strdup_printf("dot -Tsvg > %s", graphfile);
   FILE *dot = popen(command, "w");
-  graph_print_dot(G, dot, word, path);
+  graph_print_dot(G, dot);
   fclose(dot);
   g_free(command);
 }
@@ -200,36 +205,35 @@ graph_save_svg(graph *G,
 
 void
 graph_compute_edges(graph      *G,
-                    dictionary *dict,
-                    char       *word)
+                    dictionary *dict)
 {
   dictionary *repetitions = dict_new();
-  for (char *c = word; *c != '\0'; c++) {
+  for (char *c = G->word; *c != '\0'; c++) {
     int seqlen = find_seq(c);
     int kbplen = find_kbp(c);
-    int n = strlen(word);
+    int n = strlen(G->word);
     int wrdlen[n];
     int wrdcnt = dict_find_wrd(dict, c, wrdlen);
     int replen[n];
     int repcnt = dict_find_wrd(repetitions, c, replen);
 
     for (int i = 3; i <= seqlen; i++) {
-      graph_update_edge(G, c - word, c - word + i, rate_seq(*c, i), SEQ);
+      graph_update_edge(G, c - G->word, c - G->word + i, rate_seq(*c, i), SEQ);
     }
     for (int i = 3; i <= kbplen; i++) {
-      graph_update_edge(G, c - word, c - word + i, rate_kbp(i), KBP);
+      graph_update_edge(G, c - G->word, c - G->word + i, rate_kbp(i), KBP);
     }
     for (int i = 0; i < wrdcnt; i++) {
-      graph_update_edge(G, c - word, c - word + wrdlen[i], dict_rate_wrd(dict), WRD);
+      graph_update_edge(G, c - G->word, c - G->word + wrdlen[i], dict_rate_wrd(dict), WRD);
     }
     for (int i = 0; i < repcnt; i++) {
-      graph_update_edge(G, c - word, c - word + replen[i], dict_rate_wrd(repetitions), REP);
+      graph_update_edge(G, c - G->word, c - G->word + replen[i], dict_rate_wrd(repetitions), REP);
     }
 
-    for (int i = 0; i < c - word; i++) {
-      char rep[c - word - i + 1];
-      strncpy(rep, word + i, c - word - i + 1);
-      rep[c - word - i + 1] = '\0';
+    for (int i = 0; i < c - G->word; i++) {
+      char rep[c - G->word - i + 1];
+      strncpy(rep, G->word + i, c - G->word - i + 1);
+      rep[c - G->word - i + 1] = '\0';
       dict_add_word(repetitions, rep);
     }
   }
