@@ -39,6 +39,8 @@ const char *name[] = {
   "random"
 };
 
+
+
 /*
  * following category enum
  * N/A should never appear
@@ -143,36 +145,9 @@ compute_entropy(GtkListStore *ls,
   int n = strlen(word);
   int charset = compute_charset(word);
   graph *G = graph_new(n + 1, log2(charset));
-  dictionary *repetitions = dict_new();
 
-  for (char *c = word; *c != '\0'; c++) {
-    int seqlen = find_seq(c);
-    int kbplen = find_kbp(c);
-    int wrdlen[n];
-    int wrdcnt = dict_find_wrd(dict, c, wrdlen);
-    int replen[n];
-    int repcnt = dict_find_wrd(repetitions, c, replen);
+  graph_compute_edges(G, dict, word);
 
-    for (int i = 3; i <= seqlen; i++) {
-      graph_update_edge(G, c - word, c - word + i, rate_seq(*c, i), SEQ);
-    }
-    for (int i = 3; i <= kbplen; i++) {
-      graph_update_edge(G, c - word, c - word + i, rate_kbp(i), KBP);
-    }
-    for (int i = 0; i < wrdcnt; i++) {
-      graph_update_edge(G, c - word, c - word + wrdlen[i], dict_rate_wrd(dict), WRD);
-    }
-    for (int i = 0; i < repcnt; i++) {
-      graph_update_edge(G, c - word, c - word + replen[i], dict_rate_wrd(repetitions), REP);
-    }
-
-    for (int i = 0; i < c - word; i++) {
-      char rep[c - word - i + 1];
-      strncpy(rep, word + i, c - word - i + 1);
-      rep[c - word - i + 1] = '\0';
-      dict_add_word(repetitions, rep);
-    }
-  }
 
   int path[G->n];
   double entropy = graph_compute_path(G, path);
@@ -193,7 +168,7 @@ compute_entropy(GtkListStore *ls,
 
   graph_save_svg(G, word, path, graphfile);
   graph_free(G);
-  dict_free(repetitions);
+
   return entropy;
 }
 

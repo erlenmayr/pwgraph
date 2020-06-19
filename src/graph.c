@@ -198,3 +198,43 @@ graph_save_svg(graph *G,
 
 
 
+void
+graph_compute_edges(graph      *G,
+                    dictionary *dict,
+                    char       *word)
+{
+  dictionary *repetitions = dict_new();
+  for (char *c = word; *c != '\0'; c++) {
+    int seqlen = find_seq(c);
+    int kbplen = find_kbp(c);
+    int n = strlen(word);
+    int wrdlen[n];
+    int wrdcnt = dict_find_wrd(dict, c, wrdlen);
+    int replen[n];
+    int repcnt = dict_find_wrd(repetitions, c, replen);
+
+    for (int i = 3; i <= seqlen; i++) {
+      graph_update_edge(G, c - word, c - word + i, rate_seq(*c, i), SEQ);
+    }
+    for (int i = 3; i <= kbplen; i++) {
+      graph_update_edge(G, c - word, c - word + i, rate_kbp(i), KBP);
+    }
+    for (int i = 0; i < wrdcnt; i++) {
+      graph_update_edge(G, c - word, c - word + wrdlen[i], dict_rate_wrd(dict), WRD);
+    }
+    for (int i = 0; i < repcnt; i++) {
+      graph_update_edge(G, c - word, c - word + replen[i], dict_rate_wrd(repetitions), REP);
+    }
+
+    for (int i = 0; i < c - word; i++) {
+      char rep[c - word - i + 1];
+      strncpy(rep, word + i, c - word - i + 1);
+      rep[c - word - i + 1] = '\0';
+      dict_add_word(repetitions, rep);
+    }
+  }
+  dict_free(repetitions);
+}
+
+
+

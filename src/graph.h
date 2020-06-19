@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "dictionary.h"
+
 #include <stdio.h>
 
 
@@ -132,6 +134,18 @@ void graph_print_dot(graph *G, FILE *file, char *word, int *path);
  * TODO: make dot work in Flatpak
  */
 void graph_save_svg(graph *G, char *word, int *path, char *graphfile);
+
+
+
+/**
+ * graph_compute_edges:
+ * @G: the graph
+ * @dict: the dictionary
+ * @word: the password
+ *
+ * Computes the edges in a graph for a password
+ */
+void graph_compute_edges(graph *G, dictionary *dict, char *word);
 
 
 
