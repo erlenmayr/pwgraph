@@ -16,10 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "pwcheck_gtk-config.h"
 #include "pwcheck_gtk-window.h"
 
-#include "dictionary.h"
 #include "graph.h"
 
 #include <math.h>

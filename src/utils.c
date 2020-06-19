@@ -1,4 +1,4 @@
-/* patterns.c
+/* utils.c
  *
  * Copyright 2020 Stephan Verbücheln
  *
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "patterns.h"
+#include "utils.h"
 
 #include <math.h>
 #include <string.h>

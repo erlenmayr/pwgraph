@@ -1,4 +1,4 @@
-/* patterns.h
+/* utils.h
  *
  * Copyright 2020 Stephan Verbücheln
  *
