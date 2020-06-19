@@ -27,27 +27,72 @@
 
 
 
+/*
+ * following category enum
+ */
+const char *name[] = {
+  "none",
+  "dictionary",
+  "sequence",
+  "keyboard",
+  "repetition",
+  "random"
+};
+
+/*
+ * following category enum
+ * N/A should never appear
+ */
+const char *formula[] = {
+  "N/A",
+  "log₂(𝑑)",
+  "log₂(𝑐) + (𝑛 - 1) log₂(3)",
+  "log₂(𝑘) + (𝑛 - 1) log₂(9)",
+  "log₂(1 + ½ 𝑖 (𝑖 + 1))",
+  "𝑛 log₂(𝑐)"
+};
+
+
+
 /**
- * graphviz:
- * @G: the graph to paint
- * @word: the password
- * @path: the path on the graph to highlight
- * @graphfile: path of the graph SVG image
+ * list_store_append_substring:
+ * @ls: list store to append the result to
+ * @G: the whole graph
+ * @word: the whole password string for output purposes
+ * @u: the node that starts the substring
+ * @v: the node that ends the substring
+ * @pathlen: the number of random characters in a row
  *
- * TODO: implement without cached file
- * TODO: make dot work in Flatpak
+ *  Prints the result line for a substring starting at u, ending at v
  */
 void
-graphviz(graph *G,
-         char  *word,
-         int   *path,
-         char  *graphfile)
+list_store_append_substring(GtkListStore *ls,
+                            graph        *G,
+                            const char   *word,
+                            int           u,
+                            int           v,
+                            int           pathlen)
 {
-  char *command = g_strdup_printf("dot -Tsvg > %s", graphfile);
-  FILE *dot = popen(command, "w");
-  graph_print_dot(G, dot, word, path);
-  fclose(dot);
-  g_free(command);
+  GTK_IS_LIST_STORE(ls);
+  double entropy = G->edge[u][v];
+  int sublen = v - u;
+  if (G->cat[u][v] == RND) {
+    sublen = pathlen;
+    entropy *= pathlen;
+  }
+  char substring[sublen + 1];
+  strncpy(substring, word + u, sublen);
+  substring[sublen] = '\0';
+
+  GtkTreeIter iter;
+  gtk_list_store_append(ls, &iter);
+  gtk_list_store_set(ls, &iter,
+                     0, substring,
+                     1, name[G->cat[u][v]],
+                     2, sublen,
+                     3, formula[G->cat[u][v]],
+                     4, entropy,
+                     -1);
 }
 
 
@@ -61,9 +106,9 @@ graphviz(graph *G,
  * Prints information about the password to a GtkLabel.
  */
 void
-print_rating(GtkLabel *label,
-             double    entropy,
-             int       len)
+label_set_rating(GtkLabel *label,
+                 double    entropy,
+                 int       len)
 {
   GTK_IS_LABEL(label);
   char *buf = g_strdup_printf("You password entropy: %.1f bits\n"
@@ -78,75 +123,6 @@ print_rating(GtkLabel *label,
 
 
 /**
- * list_store_append_substring:
- * @ls: list store to append the result to
- * @G: the whole graph
- * @word: the whole password string for output purposes
- * @u: the node that starts the substring
- * @v: the node that ends the substring
- * @len: the number of random characters in a row
- *
- *  Prints the result line for a substring starting at u, ending at v
- */
-void
-list_store_append_substring(GtkListStore *ls,
-                            graph        *G,
-                            const char   *word,
-                            int           u,
-                            int           v,
-                            int           len)
-{
-  GTK_IS_LIST_STORE(ls);
-  char *cat, *formula;
-  int pathlen = v - u;
-  double entropy = G->edge[u][v];
-  switch (G->cat[u][v]) {
-    case WRD:
-      cat = "dictionary";
-      formula = "log₂(𝑑)";
-      break;
-    case SEQ:
-      cat = "sequence";
-      formula = "log₂(𝑐) + (𝑛 - 1) log₂(3)";
-      break;
-    case KBP:
-      cat = "keyboard";
-      formula = "log₂(𝑘) + (𝑛 - 1) log₂(9)";
-      break;
-    case REP:
-      cat = "repetition";
-      formula = "log₂(1 + ½ 𝑖 (𝑖 + 1))";
-      break;
-    case RND:
-      cat = "random";
-      formula = "𝑛 log₂(𝑐)";
-      pathlen = len;
-      entropy *= len;
-      break;
-    default:
-      cat = "non";
-      formula = "ERROR";
-      break;
-  }
-
-  char substring[pathlen + 1];
-  strncpy(substring, word + u, pathlen);
-  substring[pathlen] = '\0';
-
-  GtkTreeIter iter;
-  gtk_list_store_append(ls, &iter);
-  gtk_list_store_set(ls, &iter,
-                     0, substring,
-                     1, cat,
-                     2, pathlen,
-                     3, formula,
-                     4, entropy,
-                     -1);
-}
-
-
-
-/**
  * compute_entropy:
  * @ls: the list store for the result
  * @label: the label for the summary
@@ -156,8 +132,6 @@ list_store_append_substring(GtkListStore *ls,
  * @graphfile: path of the graph SVG image
  *
  * Computes and returns the entropy of the password.
- *
- * TODO: limit charset to ASCII
  */
 double
 compute_entropy(GtkListStore *ls,
@@ -215,9 +189,9 @@ compute_entropy(GtkListStore *ls,
     }
   }
 
-  print_rating(label, entropy, n);
+  label_set_rating(label, entropy, n);
 
-  graphviz(G, word, path, graphfile);
+  graph_save_svg(G, word, path, graphfile);
   graph_free(G);
   dict_free(repetitions);
   return entropy;

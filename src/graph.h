@@ -31,7 +31,14 @@
  *
  * Categories for the different types of substrings.
  */
-typedef enum {NON, RND, WRD, SEQ, KBP, REP} category;
+typedef enum {
+  NON,
+  WRD,
+  SEQ,
+  KBP,
+  REP,
+  RND
+} category;
 
 
 
@@ -40,6 +47,7 @@ typedef enum {NON, RND, WRD, SEQ, KBP, REP} category;
  * @n: size, i.e. number of nodes
  * @edge: weighted edges
  * @cat: category for each edge
+ * @path: the shortest path, i.e. path with least entropy
  *
  * Adjacency matrix representing the graph.
  */
@@ -47,6 +55,7 @@ typedef struct {
   int n;
   double **edge;
   category **cat;
+  int *path;
 } graph;
 
 
@@ -109,6 +118,20 @@ double graph_compute_path(graph *G, int *path);
  * Prints out a graph in dot format to a file.
  */
 void graph_print_dot(graph *G, FILE *file, char *word, int *path);
+
+
+
+/**
+ * graphviz:
+ * @G: the graph to paint
+ * @word: the password
+ * @path: the path on the graph to highlight
+ * @graphfile: path of the graph SVG image
+ *
+ * TODO: implement without cached file
+ * TODO: make dot work in Flatpak
+ */
+void graph_save_svg(graph *G, char *word, int *path, char *graphfile);
 
 
 

@@ -22,6 +22,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
+#include <glib.h>
 
 
 
@@ -178,6 +179,21 @@ graph_print_dot(graph *G,
     }
   }
   fprintf(file, "}\n");
+}
+
+
+
+void
+graph_save_svg(graph *G,
+         char  *word,
+         int   *path,
+         char  *graphfile)
+{
+  char *command = g_strdup_printf("dot -Tsvg > %s", graphfile);
+  FILE *dot = popen(command, "w");
+  graph_print_dot(G, dot, word, path);
+  fclose(dot);
+  g_free(command);
 }
 
 
