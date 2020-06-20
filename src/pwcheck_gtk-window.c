@@ -121,20 +121,20 @@ label_set_rating(GtkLabel *label,
  *
  * Computes the entropy of the password.
  */
-void
+GInputStream *
 compute_entropy(GtkListStore *ls,
                 GtkLabel     *label,
                 dictionary   *dict,
-                const gchar  *word,
-                gchar        *graphfile)
+                const gchar  *word)
 {
   graph *G = graph_new(word);
   graph_compute_edges(G, dict);
   double entropy =  graph_compute_path(G);
   list_store_set_decomposition(ls, G);
   label_set_rating(label, entropy, G->n - 1);
-  graph_save_svg(G, graphfile);
+  GInputStream *svg = graph_gio_get_svg(G);
   graph_free(G);
+  return svg;
 }
 
 
@@ -151,12 +151,10 @@ struct _PwcheckGtkWindow
   GtkTreeView         *tv_decomp;
   GtkImage            *im_graph;
   GtkLabel            *label_info;
-  dictionary          *dict;
-  gchar               *graphfile;
   GtkButton           *bn_about;
   GtkWidget           *about;
   GtkScrolledWindow   *sw_graph;
-  GtkViewport         *vp_graph;
+  dictionary          *dict;
 };
 
 G_DEFINE_TYPE(PwcheckGtkWindow, pwcheck_gtk_window, GTK_TYPE_APPLICATION_WINDOW)
@@ -164,19 +162,16 @@ G_DEFINE_TYPE(PwcheckGtkWindow, pwcheck_gtk_window, GTK_TYPE_APPLICATION_WINDOW)
 
 
 static void
-draw_graph(PwcheckGtkWindow *self)
+draw_graph(PwcheckGtkWindow *self, GInputStream *svg)
 {
-  GError *err = NULL;
+  /* scale factor for HiDPI screens */
   gint sf = gdk_window_get_scale_factor(gtk_widget_get_window(GTK_WIDGET(self)));
-  GdkPixbuf *pb = gdk_pixbuf_new_from_file_at_scale(self->graphfile,
+  GdkPixbuf *pb = gdk_pixbuf_new_from_stream_at_scale(svg,
                                                     sf * gtk_widget_get_allocated_width(GTK_WIDGET(self->sw_graph)),
                                                     sf * gtk_widget_get_allocated_height(GTK_WIDGET(self->sw_graph)),
                                                     TRUE,
-                                                    &err);
-  if (err) {
-    fprintf(stderr, "ERROR loading file: %s\n", err->message);
-    g_object_unref(err);
-  }
+                                                    NULL,
+                                                    NULL);
   cairo_surface_t *cs = gdk_cairo_surface_create_from_pixbuf(pb, 0, gtk_widget_get_window(GTK_WIDGET(self)));
   gtk_image_set_from_surface(self->im_graph, cs);
   g_object_unref(pb);
@@ -191,7 +186,8 @@ static void
 start_computation(PwcheckGtkWindow *self)
 {
   if (g_str_is_ascii(gtk_entry_get_text(self->te_passwd))) {
-    compute_entropy(self->ls_decomp, self->label_info, self->dict, gtk_entry_get_text(self->te_passwd), self->graphfile);
+    GInputStream *svg = compute_entropy(self->ls_decomp, self->label_info, self->dict, gtk_entry_get_text(self->te_passwd));
+    draw_graph(self, svg);
   } else {
     gtk_label_set_text(self->label_info, "Only ASCII characters are supported.");
   }
@@ -208,7 +204,7 @@ window_resized(GtkWidget        *sw,
                PwcheckGtkWindow *self)
 {
   GTK_IS_WIDGET(sw);
-  draw_graph(self);
+  GTK_IS_WIDGET(self);
 }
 
 static void
@@ -250,11 +246,11 @@ pwcheck_gtk_window_class_init(PwcheckGtkWindowClass *klass)
   gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, ls_decomp);
   gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, tv_decomp);
   gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, im_graph);
-  gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, vp_graph);
   gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, sw_graph);
   gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, label_info);
-  /* TODO: make proper menu popover */
+  /* TODO: pull version from meson */
   gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, about);
+  /* TODO: make proper menu popover */
   gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, bn_about);
   gtk_widget_class_bind_template_callback(widget_class, bn_compute_clicked);
   gtk_widget_class_bind_template_callback(widget_class, enter_pressed);
@@ -267,17 +263,11 @@ static void
 pwcheck_gtk_window_init(PwcheckGtkWindow *self)
 {
   gtk_widget_init_template(GTK_WIDGET(self));
-  /*
-   * Init cache directory and SVG path.
-   */
-  gchar *cachedir = g_build_path("/", g_get_user_cache_dir(), "pwcheck-gtk", NULL);
-  g_mkdir_with_parents(cachedir, 0700);
-  g_free(cachedir);
-  self->graphfile = g_build_path("/", g_get_user_cache_dir(), "pwcheck-gtk", "pwgraph.svg", NULL);
 
   /*
    * Init dictionary.
    * TODO: make this work in ~/.cache/gnome-builder/install
+   * TODO: use GIO or resoure for dictionary
    */
   const gchar *const *dirs = g_get_system_data_dirs();
   FILE *fd = NULL;
@@ -296,11 +286,6 @@ pwcheck_gtk_window_init(PwcheckGtkWindow *self)
 go_on:
   self->dict = dict_new_from_file(fd);
   fclose(fd);
-
-  /*
-   * Draw the preview demo.
-   */
-  start_computation(self);
 }
 
 

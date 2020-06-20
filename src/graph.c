@@ -126,11 +126,9 @@ graph_compute_path(graph *G)
 
 
 
-void
-graph_print_dot(graph *G,
-                FILE  *file)
+void graph_gio_print_dot(graph *G, GOutputStream  *stream)
 {
-  fprintf(file, "digraph G {\n"
+  g_output_stream_printf(stream, NULL, NULL, NULL, "digraph G {\n"
                 "\tgraph [bgcolor=\"transparent\"];\n"
                 "\tedge [fontname = \"cantarell\", fontsize=10];\n"
                 "\tnode [shape = circle, fontname = \"cantarell\", fontsize=10];\n"
@@ -173,24 +171,29 @@ graph_print_dot(graph *G,
           default:
             break;
         }
-        fprintf(file, "\t%d -> %d [ label = \"%s: %.1f\"%s%s ];\n", u, v, buf, G->edge[u][v], color, style);
+        g_output_stream_printf(stream, NULL, NULL, NULL, "\t%d -> %d [ label = \"%s: %.1f\"%s%s ];\n", u, v, buf, G->edge[u][v], color, style);
       }
     }
   }
-  fprintf(file, "}\n");
+  g_output_stream_printf(stream, NULL, NULL, NULL, "}\n");
 }
 
 
 
-void
-graph_save_svg(graph *G,
-               char  *graphfile)
+GInputStream *
+graph_gio_get_svg(graph *G)
 {
-  char *command = g_strdup_printf("dot -Tsvg > %s", graphfile);
-  FILE *dot = popen(command, "w");
-  graph_print_dot(G, dot);
-  fclose(dot);
-  g_free(command);
+  GSubprocess *dot = g_subprocess_new(G_SUBPROCESS_FLAGS_STDIN_PIPE
+                                      | G_SUBPROCESS_FLAGS_STDOUT_PIPE,
+                                      NULL,
+                                      "dot",
+                                      "-Tsvg",
+                                      NULL);
+  GInputStream *dotin = g_subprocess_get_stdout_pipe(dot);
+  GOutputStream *dotout = g_subprocess_get_stdin_pipe(dot);
+  graph_gio_print_dot(G, dotout);
+  g_output_stream_close(dotout, NULL, NULL);
+  return dotin;
 }
 
 

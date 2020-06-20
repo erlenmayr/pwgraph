@@ -19,7 +19,7 @@
 #include "dictionary.h"
 #include "utils.h"
 
-#include <stdio.h>
+#include <gtk/gtk.h>
 
 
 
@@ -125,25 +125,26 @@ double graph_compute_path(graph *G);
 
 
 /**
- * graph_print_dot:
+ * graph_gio_print_dot:
  * @G: the graph
- * @file: the stream to print the dot output to
+ * @stream: the stream to print the dot output to
  *
  * Prints out a graph in dot format to a file.
  */
-void graph_print_dot(graph *G, FILE *file);
+void graph_gio_print_dot(graph *G, GOutputStream  *stream);
 
 
 
 /**
- * graphviz:
+ * graph_gio_get_svg:
  * @G: the graph to paint
- * @graphfile: path of the graph SVG image
  *
  * TODO: implement without cached file
  * TODO: make dot work in Flatpak
  */
-void graph_save_svg(graph *G, char *graphfile);
+GInputStream *graph_gio_get_svg(graph *G);
+
+
 
 
 
