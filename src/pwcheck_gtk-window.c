@@ -190,8 +190,6 @@ draw_graph(PwcheckGtkWindow *self)
 static void
 start_computation(PwcheckGtkWindow *self)
 {
-  //gchar buf[gtk_entry_get_text_length(self->te_passwd) + 1];
-  //strcpy(buf, gtk_entry_get_text(self->te_passwd));
   if (g_str_is_ascii(gtk_entry_get_text(self->te_passwd))) {
     compute_entropy(self->ls_decomp, self->label_info, self->dict, gtk_entry_get_text(self->te_passwd), self->graphfile);
   } else {
@@ -238,14 +236,6 @@ bn_about_clicked(GtkButton        *button,
   gtk_widget_show(GTK_WIDGET(self->about));
 }
 
-static void
-on_about_closed(GtkButton         *button,
-                 PwcheckGtkWindow *self)
-{
-  GTK_IS_BUTTON(button);
-  gtk_widget_hide(GTK_WIDGET(self->about));
-}
-
 
 
 static void
@@ -269,15 +259,14 @@ pwcheck_gtk_window_class_init(PwcheckGtkWindowClass *klass)
   gtk_widget_class_bind_template_callback(widget_class, bn_compute_clicked);
   gtk_widget_class_bind_template_callback(widget_class, enter_pressed);
   gtk_widget_class_bind_template_callback(widget_class, bn_about_clicked);
-  gtk_widget_class_bind_template_callback(widget_class, on_about_closed);
   gtk_widget_class_bind_template_callback(widget_class, window_resized);
+  gtk_widget_class_bind_template_callback(widget_class, gtk_widget_hide_on_delete);
 }
 
 static void
 pwcheck_gtk_window_init(PwcheckGtkWindow *self)
 {
   gtk_widget_init_template(GTK_WIDGET(self));
-
   /*
    * Init cache directory and SVG path.
    */

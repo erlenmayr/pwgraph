@@ -221,7 +221,6 @@
   <object class="GtkAboutDialog" id="about">
     <property name="can_focus">False</property>
     <property name="type_hint">dialog</property>
-    <property name="deletable">False</property>
     <property name="transient_for">PwcheckGtkWindow</property>
     <property name="program_name">Password Graph</property>
     <property name="version">0.3</property>
@@ -234,6 +233,7 @@
     <property name="artists">Stephan Verbücheln</property>
     <property name="logo_icon_name">com.verbuech.pwcheck-gtk</property>
     <property name="license_type">gpl-3-0</property>
+    <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
     <child type="titlebar">
       <placeholder/>
     </child>
@@ -250,18 +250,7 @@
               <placeholder/>
             </child>
             <child>
-              <object class="GtkButton" id="bn_about_close">
-                <property name="label" translatable="yes">Close</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <signal name="clicked" handler="on_about_closed" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
+              <placeholder/>
             </child>
           </object>
           <packing>
