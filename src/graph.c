@@ -27,15 +27,15 @@
 
 
 graph *
-graph_new(char *word)
+graph_new(const char *word)
 {
   graph *G = malloc(sizeof(graph));
   G->n = strlen(word) + 1;
-  double weight = log2(compute_charset(word));
   G->edge = malloc(G->n * sizeof(double *));
   G->cat = malloc(G->n * sizeof(category *));
   G->path = malloc(G->n * sizeof(int));
   G->word = word;
+  double weight = log2(compute_charset(word));
   for (int u = 0; u < G->n; u++) {
     G->edge[u] = malloc(G->n * sizeof(double));
     G->cat[u] = malloc(G->n * sizeof(category));
@@ -59,21 +59,13 @@ void
 graph_free(graph *G)
 {
   if (G) {
-    if (G->edge) {
-      for (int u = 0; u < G->n; u++) {
-        free(G->edge[u]);
-      }
-      free(G->edge);
+    for (int u = 0; u < G->n; u++) {
+      free(G->edge[u]);
+      free(G->cat[u]);
     }
-    if (G->cat) {
-      for (int u = 0; u < G->n; u++) {
-        free(G->cat[u]);
-      }
-      free(G->cat);
-    }
-    if (G->path) {
-      free(G->path);
-    }
+    free(G->edge);
+    free(G->cat);
+    free(G->path);
     free(G);
   }
 }
@@ -148,7 +140,7 @@ graph_print_dot(graph *G,
       if (G->edge[u][v] < INFINITY) {
         char buf[strlen(G->word) * 2 + 1];
         int i;
-        char *c;
+        const char *c;
         for (i = 0, c = G->word + u; i < v - u; i++, c++) {
           if (*c == '\"') {
             buf[i] = '\\';
@@ -208,7 +200,7 @@ graph_compute_edges(graph      *G,
                     dictionary *dict)
 {
   dictionary *repetitions = dict_new();
-  for (char *c = G->word; *c != '\0'; c++) {
+  for (const char *c = G->word; *c != '\0'; c++) {
     int seqlen = find_seq(c);
     int kbplen = find_kbp(c);
     int n = strlen(G->word);

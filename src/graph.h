@@ -50,7 +50,8 @@ typedef enum {
  * @n: size, i.e. number of nodes
  * @edge: weighted edges
  * @cat: category for each edge
- * @path: the shortest path, i.e. path with least entropy
+ * @path: the shortest path, i.e. path with the least entropy, padded with -1
+ * @word: the password
  *
  * Adjacency matrix representing the graph.
  */
@@ -59,7 +60,7 @@ typedef struct {
   double **edge;
   category **cat;
   int *path;
-  char *word;
+  const char *word;
 } graph;
 
 
@@ -72,7 +73,7 @@ typedef struct {
  *
  * Returns: the graph
  */
-graph *graph_new(char *word);
+graph *graph_new(const char *word);
 
 
 

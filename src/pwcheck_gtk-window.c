@@ -116,7 +116,6 @@ label_set_rating(GtkLabel *label,
  * @ls: the list store for the result
  * @label: the label for the summary
  * @dict: the dictionary
- * @dict_words: number of words in the dictionary (for entropy calculation)
  * @word: the password
  * @graphfile: path of the graph SVG image
  *
@@ -126,14 +125,14 @@ void
 compute_entropy(GtkListStore *ls,
                 GtkLabel     *label,
                 dictionary   *dict,
-                char         *word,
+                const gchar  *word,
                 gchar        *graphfile)
 {
   graph *G = graph_new(word);
   graph_compute_edges(G, dict);
   double entropy =  graph_compute_path(G);
   list_store_set_decomposition(ls, G);
-  label_set_rating(label, entropy, G->n);
+  label_set_rating(label, entropy, G->n - 1);
   graph_save_svg(G, graphfile);
   graph_free(G);
 }
@@ -191,10 +190,10 @@ draw_graph(PwcheckGtkWindow *self)
 static void
 start_computation(PwcheckGtkWindow *self)
 {
-  gchar buf[gtk_entry_get_text_length(self->te_passwd) + 1];
-  strcpy(buf, gtk_entry_get_text(self->te_passwd));
-  if (g_str_is_ascii(buf)) {
-    compute_entropy(self->ls_decomp, self->label_info, self->dict, buf, self->graphfile);
+  //gchar buf[gtk_entry_get_text_length(self->te_passwd) + 1];
+  //strcpy(buf, gtk_entry_get_text(self->te_passwd));
+  if (g_str_is_ascii(gtk_entry_get_text(self->te_passwd))) {
+    compute_entropy(self->ls_decomp, self->label_info, self->dict, gtk_entry_get_text(self->te_passwd), self->graphfile);
   } else {
     gtk_label_set_text(self->label_info, "Only ASCII characters are supported.");
   }

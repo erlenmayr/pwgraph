@@ -24,9 +24,9 @@
 
 
 
-int find_seq(char *str) {
+int find_seq(const char *str) {
   int len = 1;
-  for (char *c = str; *c != '\0'; c++) {
+  for (const char *c = str; *c != '\0'; c++) {
     char x = ('A' <= c[0] && c[0] <= 'Z') ? c[0] - ('A' - 'a') : c[0];
     char y = ('A' <= c[1] && c[1] <= 'Z') ? c[1] - ('A' - 'a') : c[1];
     if (x - y == 0 || x - y == 1 || x - y == -1) {
@@ -41,7 +41,7 @@ int find_seq(char *str) {
 
 
 
-double rate_seq(char c, int len) {
+double rate_seq(const char c, int len) {
   if (('a' <= c && c <= 'z')
       || ('A' <= c && c <= 'Z')
       || ('0' <= c && c <= '9')) {
@@ -78,7 +78,7 @@ const char keyboard[4][15] = {
  *  Normalizes a character to the character that the same key gives if
  *  SHIFT key is not pressed.
  */
-static char normalize_key(char c) {
+static char normalize_key(const char c) {
   if ('a' <= c && c <= 'z') {
     return c;
   } else if ('A' <= c && c <= 'Z') {
@@ -157,7 +157,7 @@ static char normalize_key(char c) {
 /*
  *  Returns the corresponding key for an ASCII character.
  */
-static key spot_key(char c) {
+static key spot_key(const char c) {
   key k;
   for (k.row = 0; k.row < 4; k.row++) {
     for (k.i = 0; k.i < 14; k.i++) {
@@ -186,11 +186,11 @@ static int key_neighbor(key k, key n) {
 
 
 
-int find_kbp(char *str) {
+int find_kbp(const char *str) {
   key k = spot_key(*str);
   key n;
 
-  for (char *c = str + 1; *c != '\0'; c++) {
+  for (const char *c = str + 1; *c != '\0'; c++) {
     n = spot_key(*c);
     if (!key_neighbor(k, n)) {
       return c - str;
@@ -220,10 +220,10 @@ double rate_kbp(int len) {
  *  Computes the charset size for a string.
  */
 int
-compute_charset(char *str)
+compute_charset(const char *str)
 {
   char flags = 0;
-  for (char *c = str; *c != '\0'; c++) {
+  for (const char *c = str; *c != '\0'; c++) {
     if ('a' <= *c && *c <= 'z') {
       flags |= FLAG_az;
     } else if ('A' <= *c && *c <='Z') {

@@ -24,7 +24,7 @@
  *
  * Returns the length of the longest sequence (“abc”, “321” or “aaa”) in a string.
  */
-int find_seq(char *str);
+int find_seq(const char *str);
 
 
 
@@ -35,7 +35,7 @@ int find_seq(char *str);
  *
  * Returns the entropy of a sequence string.
  */
-double rate_seq(char c, int len);
+double rate_seq(const char c, int len);
 
 
 
@@ -45,7 +45,7 @@ double rate_seq(char c, int len);
  *
  * Returns how many of the first characters of a string resemble a keyboard pattern.
  */
-int find_kbp(char *str);
+int find_kbp(const char *str);
 
 
 
@@ -65,7 +65,7 @@ double rate_kbp(int len);
  *
  * Computes the charset of a string.
  */
-int compute_charset(char *str);
+int compute_charset(const char *str);
 
 
 

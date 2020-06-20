@@ -163,7 +163,7 @@ dict_add_word(dictionary *dict,
 
 int
 dict_find_wrd(dictionary *dict,
-              char       *word,
+              const char *word,
               int        *matches)
 {
   if (dict && dict->root) {
@@ -171,7 +171,7 @@ dict_find_wrd(dictionary *dict,
     int len = 0;
     int cnt = 0;
     int n = strlen(word);
-    for (char *c = word; normalize_letter(*c) != '\0'; c++) {
+    for (const char *c = word; normalize_letter(*c) != '\0'; c++) {
       int i = normalize_letter(*c) - 'a';
       if (!(node->next[i])) {
         break;

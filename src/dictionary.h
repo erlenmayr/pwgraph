@@ -80,7 +80,7 @@ void dict_add_word(dictionary *dict, char *word);
  * Returns: number of matches (entries in the integer array length)
  *
  */
-int dict_find_wrd(dictionary *dict, char *word, int *matches);
+int dict_find_wrd(dictionary *dict, const char *word, int *matches);
 
 
 
