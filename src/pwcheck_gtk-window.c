@@ -203,36 +203,31 @@ start_computation(PwcheckGtkWindow *self)
  * Widget callback functions.
  */
 static void
-window_resized(GtkWidget        *sw,
-               PwcheckGtkWindow *self)
-{
-  GTK_IS_WIDGET(sw);
-  GTK_IS_WIDGET(self);
-}
-
-static void
-bn_compute_clicked(GtkButton        *button,
-                   PwcheckGtkWindow *self)
+on_compute_clicked(GtkButton *button,
+                   gpointer   userdata)
 {
   GTK_IS_BUTTON(button);
-  start_computation(self);
+  PWCHECK_GTK_IS_WINDOW(userdata);
+  start_computation(userdata);
 
 }
 
 static void
-enter_pressed(GtkEntry         *entry,
-              PwcheckGtkWindow *self)
+on_enter_pressed(GtkEntry *entry,
+                 gpointer  userdata)
 {
   GTK_IS_ENTRY(entry);
-  start_computation(self);
+  PWCHECK_GTK_IS_WINDOW(userdata);
+  start_computation(userdata);
 }
 
 static void
-bn_about_clicked(GtkButton        *button,
-                 PwcheckGtkWindow *self)
+on_about_clicked(GtkButton *button,
+                 gpointer   userdata)
 {
   GTK_IS_BUTTON(button);
-  gtk_widget_show(GTK_WIDGET(self->about));
+  PWCHECK_GTK_IS_WINDOW(userdata);
+  gtk_widget_show(GTK_WIDGET(PWCHECK_GTK_WINDOW(userdata)->about));
 }
 
 
@@ -253,10 +248,9 @@ pwcheck_gtk_window_class_init(PwcheckGtkWindowClass *klass)
   gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, label_info);
   gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, about);
   gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, bn_about);
-  gtk_widget_class_bind_template_callback(widget_class, bn_compute_clicked);
-  gtk_widget_class_bind_template_callback(widget_class, enter_pressed);
-  gtk_widget_class_bind_template_callback(widget_class, bn_about_clicked);
-  gtk_widget_class_bind_template_callback(widget_class, window_resized);
+  gtk_widget_class_bind_template_callback(widget_class, on_compute_clicked);
+  gtk_widget_class_bind_template_callback(widget_class, on_enter_pressed);
+  gtk_widget_class_bind_template_callback(widget_class, on_about_clicked);
   gtk_widget_class_bind_template_callback(widget_class, gtk_widget_hide_on_delete);
 }
 
@@ -266,9 +260,8 @@ pwcheck_gtk_window_init(PwcheckGtkWindow *self)
   gtk_widget_init_template(GTK_WIDGET(self));
 
   gtk_about_dialog_set_version(self->about, PACKAGE_VERSION);
-  /*
-   * Init dictionary.
-   */
+
+  /* Init dictionary. */
   GInputStream *stream = g_resources_open_stream("/com/verbuech/pwcheck-gtk/dictionary.txt",
                           G_RESOURCE_LOOKUP_FLAGS_NONE, NULL);
   self->dict = dict_new_from_stream(stream);
