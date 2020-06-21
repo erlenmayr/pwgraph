@@ -105,16 +105,6 @@ dict_new()
 }
 
 
-dictionary *
-dict_new_from_file(FILE *fd)
-{
-  dictionary *dict = dict_new();
-  char buf[100];
-  while (fgets(buf, 100, fd)) {
-    dict_add_word(dict, buf);
-  }
-  return dict;
-}
 
 dictionary *
 dict_new_from_stream(GInputStream *stream)
@@ -122,7 +112,7 @@ dict_new_from_stream(GInputStream *stream)
   dictionary *dict = dict_new();
   GDataInputStream *dstream = g_data_input_stream_new(stream);
   gchar *l;
-  while (l = g_data_input_stream_read_line_utf8(dstream, NULL, NULL, NULL)) {
+  while ((l = g_data_input_stream_read_line_utf8(dstream, NULL, NULL, NULL)) != NULL) {
     printf("adding: %s\n", l);
     dict_add_word(dict, l);
   }

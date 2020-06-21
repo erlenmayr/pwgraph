@@ -18,8 +18,6 @@
 
 #include <gtk/gtk.h>
 
-#include <stdio.h>
-
 
 
 /**
@@ -42,11 +40,10 @@ dictionary *dict_new();
 
 /**
  * dict_new_from_file:
- * @fd: a text file with one word per line
+ * @stream: a GInputStream with one word per line
  *
  * Initializes and returns a new dictionary based on the file represented by *fd.
  */
-dictionary *dict_new_from_file(FILE *fd);
 dictionary *dict_new_from_stream(GInputStream *stream);
 
 
