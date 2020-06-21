@@ -6,6 +6,7 @@ pwcheck_gtk_sources = [
   'pwcheck_gtk-window.c',
 ]
 
+# libc math library if not included
 cc = meson.get_compiler('c')
 m_dep = cc.find_library('m', required : false)
 

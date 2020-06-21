@@ -17,6 +17,7 @@
  */
 
 #include "pwcheck_gtk-window.h"
+#include "pwcheck_gtk-config.h"
 #include "graph.h"
 #include <math.h>
 
@@ -151,7 +152,7 @@ struct _PwcheckGtkWindow
   GtkImage            *im_graph;
   GtkLabel            *label_info;
   GtkButton           *bn_about;
-  GtkWidget           *about;
+  GtkAboutDialog      *about;
   GtkScrolledWindow   *sw_graph;
   dictionary          *dict;
 };
@@ -250,9 +251,7 @@ pwcheck_gtk_window_class_init(PwcheckGtkWindowClass *klass)
   gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, im_graph);
   gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, sw_graph);
   gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, label_info);
-  /* TODO: pull version from meson */
   gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, about);
-  /* TODO: make proper menu popover */
   gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, bn_about);
   gtk_widget_class_bind_template_callback(widget_class, bn_compute_clicked);
   gtk_widget_class_bind_template_callback(widget_class, enter_pressed);
@@ -266,6 +265,7 @@ pwcheck_gtk_window_init(PwcheckGtkWindow *self)
 {
   gtk_widget_init_template(GTK_WIDGET(self));
 
+  gtk_about_dialog_set_version(self->about, PACKAGE_VERSION);
   /*
    * Init dictionary.
    */
