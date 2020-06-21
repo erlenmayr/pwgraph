@@ -65,7 +65,7 @@ list_store_set_decomposition(GtkListStore *ls,
   GTK_IS_LIST_STORE(ls);
   gtk_list_store_clear(ls);
   gchar buf[G->n];
-  for (gsize i = 0; i < G->n - 1; i++) {
+  for (gint i = 0; i < G->n - 1; i++) {
     if (G->path[i] < 0) {
       continue;
     }

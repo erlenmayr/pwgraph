@@ -77,9 +77,8 @@ void dict_add_word(dictionary *dict, const gchar *word);
  * Finds dictionary words in a string.
  *
  * Returns: number of matches (entries in the integer array length)
- *
  */
-gsize dict_find_wrd(dictionary *dict, const char *word, gsize *matches);
+gsize dict_find_wrd(dictionary *dict, const gchar *word, gsize *matches);
 
 
 

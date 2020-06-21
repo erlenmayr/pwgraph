@@ -56,7 +56,7 @@ typedef enum {
  * Adjacency matrix representing the graph.
  */
 typedef struct {
-  gsize n;
+  gint n;
   gdouble **edge;
   category **cat;
   gint *path;
@@ -73,7 +73,7 @@ typedef struct {
  *
  * Returns: the graph
  */
-graph *graph_new(const char *word);
+graph *graph_new(const gchar *word);
 
 
 
@@ -97,7 +97,7 @@ void graph_free(graph *G);
  *
  * Updates a graph edge, if the new weight is less than the previous weight.
  */
-void graph_update_edge(graph *G, int u, int v, double weight, category cat);
+void graph_update_edge(graph *G, gint u, gint v, gdouble weight, category cat);
 
 
 
