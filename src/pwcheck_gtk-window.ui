@@ -223,7 +223,7 @@
     <property name="type_hint">dialog</property>
     <property name="transient_for">PwcheckGtkWindow</property>
     <property name="program_name">Password Graph</property>
-    <property name="version">0.9.0</property>
+    <property name="version">0.9.1</property>
     <property name="copyright" translatable="yes">©2020 Stephan Verbücheln</property>
     <property name="comments" translatable="yes">Graph-based password check</property>
     <property name="website">https://github.com/erlenmayr/pwcheck-gtk</property>

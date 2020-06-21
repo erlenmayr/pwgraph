@@ -64,15 +64,13 @@ list_store_set_decomposition(GtkListStore *ls,
 {
   GTK_IS_LIST_STORE(ls);
   gtk_list_store_clear(ls);
-  gchar buf[G->n];
   for (gint i = 0; i < G->n - 1; i++) {
     if (G->path[i] < 0) {
       continue;
     }
     GtkTreeIter iter;
     gint len = G->path[i + 1] - G->path[i];
-    strncpy(buf, G->word + G->path[i], len);
-    buf[len] = '\0';
+    gchar *buf = g_strndup(G->word + G->path[i], len);
     gtk_list_store_append(ls, &iter);
     gtk_list_store_set(ls, &iter,
                        0, buf,
@@ -81,6 +79,7 @@ list_store_set_decomposition(GtkListStore *ls,
                        3, formula[G->cat[G->path[i]][G->path[i + 1]]],
                        4, G->edge[G->path[i]][G->path[i + 1]],
                        -1);
+    g_free(buf);
   }
 }
 

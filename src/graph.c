@@ -222,10 +222,9 @@ graph_compute_edges(graph      *G,
     }
 
     for (int i = 0; i < c - G->word; i++) {
-      gchar rep[c - G->word - i + 1];
-      strncpy(rep, G->word + i, c - G->word - i + 1);
-      rep[c - G->word - i + 1] = '\0';
+      gchar *rep = g_strndup(G->word + i, c - G->word - i + 1);
       dict_add_word(repetitions, rep);
+      g_free(rep);
     }
   }
   dict_free(repetitions);
