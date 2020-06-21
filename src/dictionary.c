@@ -27,14 +27,14 @@
 
 typedef struct dict_node {
   struct dict_node *next[26];
-  int               end;
+  gboolean          end;
 } dict_node;
 
 
 
 struct _dictionary {
   dict_node *root;
-  int        size;
+  gint       size;
 };
 
 
@@ -45,8 +45,8 @@ struct _dictionary {
  *
  * Normalizes a letter (including 1337) to lower case.
  */
-static char
-normalize_letter(char c)
+static gchar
+normalize_letter(gchar c)
 {
   if ('a' <= c && c <= 'z') {
     return c;
@@ -86,10 +86,10 @@ static dict_node *
 dict_new_node()
 {
   dict_node *dict = malloc(sizeof(dict_node));
-  for (int i = 0 ; i < 26; i++) {
+  for (gint i = 0 ; i < 26; i++) {
     dict->next[i] = NULL;
   }
-  dict->end = 0;
+  dict->end = FALSE;
   return dict;
 }
 
@@ -121,7 +121,7 @@ dict_new_from_stream(GInputStream *stream)
 static void
 dict_free_node(dict_node *dict)
 {
-  for (int i = 0 ; i < 26; i++) {
+  for (gint i = 0 ; i < 26; i++) {
     if (dict->next[i] != NULL) {
       dict_free_node(dict->next[i]);
     }
@@ -142,37 +142,37 @@ dict_free(dictionary *dict)
 
 
 void
-dict_add_word(dictionary *dict,
-              char       *word)
+dict_add_word(dictionary  *dict,
+              const gchar *word)
 {
   if (dict && dict->root) {
     dict->size++;
     dict_node *node = dict->root;
-    for (const char *c = word; normalize_letter(*c) != '\0'; c++) {
-      int i = normalize_letter(*c) - 'a';
+    for (const gchar *c = word; normalize_letter(*c) != '\0'; c++) {
+      gint i = normalize_letter(*c) - 'a';
       if (node->next[i] == NULL) {
         node->next[i] = dict_new_node();
       }
       node = node->next[i];
     }
-    node->end = 1;
+    node->end = TRUE;
   }
 }
 
 
 
-int
-dict_find_wrd(dictionary *dict,
-              const char *word,
-              int        *matches)
+gsize
+dict_find_wrd(dictionary  *dict,
+              const gchar *word,
+              gsize       *matches)
 {
   if (dict && dict->root) {
     dict_node *node = dict->root;
-    int len = 0;
-    int cnt = 0;
-    int n = strlen(word);
-    for (const char *c = word; normalize_letter(*c) != '\0'; c++) {
-      int i = normalize_letter(*c) - 'a';
+    gsize len = 0;
+    gsize cnt = 0;
+    gsize n = strlen(word);
+    for (const gchar *c = word; normalize_letter(*c) != '\0'; c++) {
+      gint i = normalize_letter(*c) - 'a';
       if (!(node->next[i])) {
         break;
       }
@@ -183,7 +183,7 @@ dict_find_wrd(dictionary *dict,
         cnt++;
       }
     }
-    for (int i = cnt; i < n; i++) {
+    for (gsize i = cnt; i < n; i++) {
       matches[i] = 0;
     }
     return cnt;
@@ -193,7 +193,7 @@ dict_find_wrd(dictionary *dict,
 
 
 
-double
+gdouble
 dict_rate_wrd(dictionary *dict)
 {
   return log2(dict->size);

@@ -56,11 +56,11 @@ typedef enum {
  * Adjacency matrix representing the graph.
  */
 typedef struct {
-  int n;
-  double **edge;
+  gsize n;
+  gdouble **edge;
   category **cat;
-  int *path;
-  const char *word;
+  gint *path;
+  const gchar *word;
 } graph;
 
 

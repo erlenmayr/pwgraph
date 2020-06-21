@@ -26,7 +26,7 @@ gsize
 find_seq(const gchar *str)
 {
   gsize len = 1;
-  for (const char *c = str; *c != '\0'; c++) {
+  for (const gchar *c = str; *c != '\0'; c++) {
     gchar x = ('A' <= c[0] && c[0] <= 'Z') ? c[0] - ('A' - 'a') : c[0];
     gchar y = ('A' <= c[1] && c[1] <= 'Z') ? c[1] - ('A' - 'a') : c[1];
     if (x - y == 0 || x - y == 1 || x - y == -1) {

@@ -64,7 +64,7 @@ void dict_free(dictionary *dict);
  * 
  * Adds a single word to the dictionary. Stops at non-letter characters.
  */
-void dict_add_word(dictionary *dict, char *word);
+void dict_add_word(dictionary *dict, const gchar *word);
 
 
 
@@ -79,7 +79,7 @@ void dict_add_word(dictionary *dict, char *word);
  * Returns: number of matches (entries in the integer array length)
  *
  */
-int dict_find_wrd(dictionary *dict, const char *word, int *matches);
+gsize dict_find_wrd(dictionary *dict, const char *word, gsize *matches);
 
 
 
@@ -89,7 +89,7 @@ int dict_find_wrd(dictionary *dict, const char *word, int *matches);
  *
  * Computes the entropy of a dictionary word.
  */
-double dict_rate_wrd(dictionary *dict);
+gdouble dict_rate_wrd(dictionary *dict);
 
 
 
