@@ -25,16 +25,16 @@
 graph *
 graph_new(const gchar *word)
 {
-  graph *G = malloc(sizeof(graph));
+  graph *G = g_malloc(sizeof(graph));
   G->n = strlen(word) + 1;
-  G->edge = malloc(G->n * sizeof(gdouble *));
-  G->cat = malloc(G->n * sizeof(category *));
-  G->path = malloc(G->n * sizeof(gint));
+  G->edge = g_malloc(G->n * sizeof(gdouble *));
+  G->cat = g_malloc(G->n * sizeof(category *));
+  G->path = g_malloc(G->n * sizeof(gint));
   G->word = word;
   gdouble weight = log2(compute_charset(word));
   for (gint u = 0; u < G->n; u++) {
-    G->edge[u] = malloc(G->n * sizeof(gdouble));
-    G->cat[u] = malloc(G->n * sizeof(category));
+    G->edge[u] = g_malloc(G->n * sizeof(gdouble));
+    G->cat[u] = g_malloc(G->n * sizeof(category));
     G->path[u] = -1;
     for (gint v = 0; v < G->n; v++) {
       if (u < G->n - 1 && u + 1 == v) {
@@ -56,13 +56,13 @@ graph_free(graph *G)
 {
   if (G) {
     for (gint u = 0; u < G->n; u++) {
-      free(G->edge[u]);
-      free(G->cat[u]);
+      g_free(G->edge[u]);
+      g_free(G->cat[u]);
     }
-    free(G->edge);
-    free(G->cat);
-    free(G->path);
-    free(G);
+    g_free(G->edge);
+    g_free(G->cat);
+    g_free(G->path);
+    g_free(G);
   }
 }
 
@@ -189,6 +189,7 @@ graph_gio_get_svg(graph *G)
   GOutputStream *dotout = g_subprocess_get_stdin_pipe(dot);
   graph_gio_print_dot(G, dotout);
   g_output_stream_close(dotout, NULL, NULL);
+  g_object_unref(dotout);
   return dotin;
 }
 

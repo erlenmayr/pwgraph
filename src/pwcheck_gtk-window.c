@@ -172,8 +172,11 @@ draw_graph(PwcheckGtkWindow *self, GInputStream *svg)
                                                     TRUE,
                                                     NULL,
                                                     NULL);
+  g_input_stream_close(svg, NULL, NULL);
+  g_object_unref(svg);
   cairo_surface_t *cs = gdk_cairo_surface_create_from_pixbuf(pb, 0, gtk_widget_get_window(GTK_WIDGET(self)));
   gtk_image_set_from_surface(self->im_graph, cs);
+  cairo_surface_destroy(cs);
   g_object_unref(pb);
 }
 
@@ -270,6 +273,8 @@ pwcheck_gtk_window_init(PwcheckGtkWindow *self)
   GInputStream *stream = g_resources_open_stream("/com/verbuech/pwcheck-gtk/dictionary.txt",
                           G_RESOURCE_LOOKUP_FLAGS_NONE, NULL);
   self->dict = dict_new_from_stream(stream);
+  g_input_stream_close(stream, NULL, NULL);
+  g_object_unref(stream);
 }
 
 

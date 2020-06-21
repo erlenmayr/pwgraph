@@ -82,7 +82,7 @@ normalize_letter(gchar c)
 static dict_node *
 dict_new_node()
 {
-  dict_node *dict = malloc(sizeof(dict_node));
+  dict_node *dict = g_malloc(sizeof(dict_node));
   for (gint i = 0 ; i < 26; i++) {
     dict->next[i] = NULL;
   }
@@ -95,7 +95,7 @@ dict_new_node()
 dictionary *
 dict_new()
 {
-  dictionary *dict = malloc(sizeof(dictionary));
+  dictionary *dict = g_malloc(sizeof(dictionary));
   dict->root = dict_new_node();
   dict->size = 0;
   return dict;
@@ -112,6 +112,7 @@ dict_new_from_stream(GInputStream *stream)
   while ((l = g_data_input_stream_read_line_utf8(dstream, NULL, NULL, NULL)) != NULL) {
     dict_add_word(dict, l);
   }
+  g_object_unref(dstream);
   return dict;
 }
 
@@ -123,7 +124,7 @@ dict_free_node(dict_node *dict)
       dict_free_node(dict->next[i]);
     }
   }
-  free(dict);
+  g_free(dict);
 }
 
 
@@ -133,7 +134,7 @@ dict_free(dictionary *dict)
 {
   if (dict)
     dict_free_node(dict->root);
-  free(dict);
+  g_free(dict);
 }
 
 
