@@ -139,7 +139,6 @@ void graph_gio_print_dot(graph *G, GOutputStream  *stream);
  * graph_gio_get_svg:
  * @G: the graph to paint
  *
- * TODO: implement without cached file
  * TODO: make dot work in Flatpak
  */
 GInputStream *graph_gio_get_svg(graph *G);

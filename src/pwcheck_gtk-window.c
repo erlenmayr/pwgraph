@@ -266,26 +266,10 @@ pwcheck_gtk_window_init(PwcheckGtkWindow *self)
 
   /*
    * Init dictionary.
-   * TODO: make this work in ~/.cache/gnome-builder/install
-   * TODO: use GIO or resoure for dictionary
    */
-  const gchar *const *dirs = g_get_system_data_dirs();
-  FILE *fd = NULL;
-  for (int i = 0; dirs[i]; i++) {
-    fd = fopen(g_build_path("/", dirs[i], "pwcheck-gtk", "dictionary.txt", NULL), "r");
-    if (!fd) {
-      continue;
-    } else {
-      printf("Opened: %s\n", g_build_path("/", dirs[i], "pwcheck-gtk", "dictionary.txt", NULL));
-      goto go_on;
-    }
-  }
-  fprintf(stderr, "FATAL ERROR: Could not find “dictionary.txt”.\n");
-  exit(-1);
-
-go_on:
-  self->dict = dict_new_from_file(fd);
-  fclose(fd);
+  GInputStream *stream = g_resources_open_stream("/com/verbuech/pwcheck-gtk/dictionary.txt",
+                          G_RESOURCE_LOOKUP_FLAGS_NONE, NULL);
+  self->dict = dict_new_from_stream(stream);
 }
 
 

@@ -116,7 +116,18 @@ dict_new_from_file(FILE *fd)
   return dict;
 }
 
-
+dictionary *
+dict_new_from_stream(GInputStream *stream)
+{
+  dictionary *dict = dict_new();
+  GDataInputStream *dstream = g_data_input_stream_new(stream);
+  gchar *l;
+  while (l = g_data_input_stream_read_line_utf8(dstream, NULL, NULL, NULL)) {
+    printf("adding: %s\n", l);
+    dict_add_word(dict, l);
+  }
+  return dict;
+}
 
 static void
 dict_free_node(dict_node *dict)

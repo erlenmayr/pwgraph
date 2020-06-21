@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <gtk/gtk.h>
+
 #include <stdio.h>
 
 
@@ -45,7 +47,7 @@ dictionary *dict_new();
  * Initializes and returns a new dictionary based on the file represented by *fd.
  */
 dictionary *dict_new_from_file(FILE *fd);
-
+dictionary *dict_new_from_stream(GInputStream *stream);
 
 
 /**

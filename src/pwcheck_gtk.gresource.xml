@@ -2,5 +2,6 @@
 <gresources>
   <gresource prefix="/com/verbuech/pwcheck-gtk">
     <file>pwcheck_gtk-window.ui</file>
+    <file>dictionary.txt</file>
   </gresource>
 </gresources>

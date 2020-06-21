@@ -210,42 +210,47 @@ double rate_kbp(int len) {
 
 
 /*
- *  Flags for character sets, SC are non-alphanumeric characters.
+ * Flags for character sets
+ * az: lower-case letters
+ * AZ: upper-case letters
+ * 09: digits
+ * SC: special characters
  */
-#define FLAG_az 0x1
-#define FLAG_AZ 0x2
-#define FLAG_09 0x4
-#define FLAG_SC 0x8
-/*
- *  Computes the charset size for a string.
- */
+typedef enum {
+  CHARSET_NONE = 0x0,
+  CHARSET_az = 0x1,
+  CHARSET_AZ = 0x2,
+  CHARSET_09 = 0x4,
+  CHARSET_SC = 0x8
+} csflags;
+
 int
 compute_charset(const char *str)
 {
-  char flags = 0;
+  csflags flags = CHARSET_NONE;
   for (const char *c = str; *c != '\0'; c++) {
     if ('a' <= *c && *c <= 'z') {
-      flags |= FLAG_az;
+      flags |= CHARSET_az;
     } else if ('A' <= *c && *c <='Z') {
-      flags |= FLAG_AZ;
+      flags |= CHARSET_AZ;
     } else if ('0' <= *c && *c <= '9') {
-      flags |= FLAG_09;
+      flags |= CHARSET_09;
     } else {
-      flags |= FLAG_SC;
+      flags |= CHARSET_SC;
     }
   }
 
   int charset = 0;
-  if (flags & FLAG_az) {
+  if (flags & CHARSET_az) {
     charset += 26;
   }
-  if (flags & FLAG_AZ) {
+  if (flags & CHARSET_AZ) {
     charset += 26;
   }
-  if (flags & FLAG_09) {
+  if (flags & CHARSET_09) {
     charset += 10;
   }
-  if (flags & FLAG_SC) {
+  if (flags & CHARSET_SC) {
     // number of ASCII chars which are neither letters nor digits
     charset += 32;
   }

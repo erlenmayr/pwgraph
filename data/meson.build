@@ -40,8 +40,6 @@ if compile_schemas.found()
   )
 endif
 
-install_data('dictionary.txt')
-
 scalable_iconsdir = join_paths('icons', 'hicolor', 'scalable', 'apps')
 install_data(
   join_paths(scalable_iconsdir, 'com.verbuech.pwcheck-gtk.svg'),
