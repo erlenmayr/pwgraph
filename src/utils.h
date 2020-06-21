@@ -67,7 +67,7 @@ gdouble rate_kbp(gsize len);
  *
  * Computes the charset of a string.
  */
-int compute_charset(const gchar *str);
+gint compute_charset(const gchar *str);
 
 
 

@@ -240,7 +240,7 @@ typedef enum {
 
 
 
-int
+gint
 compute_charset(const gchar *str)
 {
   csflags flags = CHARSET_NONE;
