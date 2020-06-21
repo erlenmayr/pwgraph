@@ -25,7 +25,7 @@
 /*
  * following category enum
  */
-const char *name[] = {
+const gchar *name[] = {
   "none",
   "dictionary",
   "sequence",
@@ -40,7 +40,7 @@ const char *name[] = {
  * following category enum
  * N/A should never appear
  */
-const char *formula[] = {
+const gchar *formula[] = {
   "N/A",
   "log₂(𝑑)",
   "log₂(𝑐) + (𝑛 - 1) log₂(3)",
@@ -96,11 +96,11 @@ list_store_set_decomposition(GtkListStore *ls,
  */
 void
 label_set_rating(GtkLabel *label,
-                 double    entropy,
-                 int       len)
+                 gdouble    entropy,
+                 gint       len)
 {
   GTK_IS_LABEL(label);
-  char *buf = g_strdup_printf("You password entropy: %.1f bits\n"
+  gchar *buf = g_strdup_printf("You password entropy: %.1f bits\n"
                               "Maximum entropy for ASCII passwords of length %d: %.1f bits\n",
                               entropy,
                               len,
@@ -129,7 +129,7 @@ compute_entropy(GtkListStore *ls,
 {
   graph *G = graph_new(word);
   graph_compute_edges(G, dict);
-  double entropy =  graph_compute_path(G);
+  gdouble entropy =  graph_compute_path(G);
   list_store_set_decomposition(ls, G);
   label_set_rating(label, entropy, G->n - 1);
   GInputStream *svg = graph_gio_get_svg(G);

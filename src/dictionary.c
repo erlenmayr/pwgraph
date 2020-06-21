@@ -113,7 +113,6 @@ dict_new_from_stream(GInputStream *stream)
   GDataInputStream *dstream = g_data_input_stream_new(stream);
   gchar *l;
   while ((l = g_data_input_stream_read_line_utf8(dstream, NULL, NULL, NULL)) != NULL) {
-    printf("adding: %s\n", l);
     dict_add_word(dict, l);
   }
   return dict;
