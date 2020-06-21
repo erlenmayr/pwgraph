@@ -19,16 +19,16 @@
 #include "utils.h"
 
 #include <math.h>
-#include <string.h>
-#include <stdlib.h>
 
 
 
-int find_seq(const char *str) {
-  int len = 1;
+gsize
+find_seq(const gchar *str)
+{
+  gsize len = 1;
   for (const char *c = str; *c != '\0'; c++) {
-    char x = ('A' <= c[0] && c[0] <= 'Z') ? c[0] - ('A' - 'a') : c[0];
-    char y = ('A' <= c[1] && c[1] <= 'Z') ? c[1] - ('A' - 'a') : c[1];
+    gchar x = ('A' <= c[0] && c[0] <= 'Z') ? c[0] - ('A' - 'a') : c[0];
+    gchar y = ('A' <= c[1] && c[1] <= 'Z') ? c[1] - ('A' - 'a') : c[1];
     if (x - y == 0 || x - y == 1 || x - y == -1) {
       len++;
     } else {
@@ -41,7 +41,10 @@ int find_seq(const char *str) {
 
 
 
-double rate_seq(const char c, int len) {
+double
+rate_seq(const gchar c,
+         gsize       len)
+{
   if (('a' <= c && c <= 'z')
       || ('A' <= c && c <= 'Z')
       || ('0' <= c && c <= '9')) {
@@ -56,8 +59,8 @@ double rate_seq(const char c, int len) {
  * Represents a key based on its keyboard coordinates.
  */
 typedef struct {
-  int row;
-  int i;
+  gint row;
+  gint i;
 } key;
 
 
@@ -65,7 +68,7 @@ typedef struct {
 /*
  * keyboard layout (US)
  */
-const char keyboard[4][15] = {
+const gchar keyboard[4][15] = {
   "`1234567890-= ",
   " qwertyuiop[]\\",
   " asdfghjkl;'  ",
@@ -78,7 +81,9 @@ const char keyboard[4][15] = {
  *  Normalizes a character to the character that the same key gives if
  *  SHIFT key is not pressed.
  */
-static char normalize_key(const char c) {
+static gchar
+normalize_key(const gchar c)
+{
   if ('a' <= c && c <= 'z') {
     return c;
   } else if ('A' <= c && c <= 'Z') {
@@ -157,7 +162,9 @@ static char normalize_key(const char c) {
 /*
  *  Returns the corresponding key for an ASCII character.
  */
-static key spot_key(const char c) {
+static key
+spot_key(const gchar c)
+{
   key k;
   for (k.row = 0; k.row < 4; k.row++) {
     for (k.i = 0; k.i < 14; k.i++) {
@@ -176,21 +183,26 @@ static key spot_key(const char c) {
 /*
  *  Returns 1, iff keys k and n are neighbors.
  */
-static int key_neighbor(key k, key n) {
+static gboolean
+key_neighbor(key k,
+             key n)
+{
   if (abs(k.row - n.row) <= 1
       && abs(k.i - n.i) <= 1) {
-    return 1;
+    return TRUE;
   }
-  return 0;
+  return FALSE;
 }
 
 
 
-int find_kbp(const char *str) {
+gsize
+find_kbp(const gchar *str)
+{
   key k = spot_key(*str);
   key n;
 
-  for (const char *c = str + 1; *c != '\0'; c++) {
+  for (const gchar *c = str + 1; *c != '\0'; c++) {
     n = spot_key(*c);
     if (!key_neighbor(k, n)) {
       return c - str;
@@ -202,8 +214,10 @@ int find_kbp(const char *str) {
 
 
 
-double rate_kbp(int len) {
-  double entropy = log2(47) + (len - 1) * log2(9);
+gdouble
+rate_kbp(gsize len)
+{
+  gdouble entropy = log2(47) + (len - 1) * log2(9);
   return entropy;
 }
 
@@ -224,11 +238,13 @@ typedef enum {
   CHARSET_SC = 0x8
 } csflags;
 
+
+
 int
-compute_charset(const char *str)
+compute_charset(const gchar *str)
 {
   csflags flags = CHARSET_NONE;
-  for (const char *c = str; *c != '\0'; c++) {
+  for (const gchar *c = str; *c != '\0'; c++) {
     if ('a' <= *c && *c <= 'z') {
       flags |= CHARSET_az;
     } else if ('A' <= *c && *c <='Z') {
@@ -240,7 +256,7 @@ compute_charset(const char *str)
     }
   }
 
-  int charset = 0;
+  gint charset = 0;
   if (flags & CHARSET_az) {
     charset += 26;
   }

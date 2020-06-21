@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <gtk/gtk.h>
+
 
 
 /**
@@ -24,7 +26,7 @@
  *
  * Returns the length of the longest sequence (“abc”, “321” or “aaa”) in a string.
  */
-int find_seq(const char *str);
+gsize find_seq(const gchar *str);
 
 
 
@@ -35,7 +37,7 @@ int find_seq(const char *str);
  *
  * Returns the entropy of a sequence string.
  */
-double rate_seq(const char c, int len);
+gdouble rate_seq(const gchar c, gsize len);
 
 
 
@@ -45,7 +47,7 @@ double rate_seq(const char c, int len);
  *
  * Returns how many of the first characters of a string resemble a keyboard pattern.
  */
-int find_kbp(const char *str);
+gsize find_kbp(const gchar *str);
 
 
 
@@ -55,7 +57,7 @@ int find_kbp(const char *str);
  *
  * Returns the entropy of a keyboard pattern for a length.
  */
-double rate_kbp(int len);
+gdouble rate_kbp(gsize len);
 
 
 
@@ -65,7 +67,7 @@ double rate_kbp(int len);
  *
  * Computes the charset of a string.
  */
-int compute_charset(const char *str);
+int compute_charset(const gchar *str);
 
 
 
