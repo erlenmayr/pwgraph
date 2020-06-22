@@ -101,7 +101,7 @@ label_set_rating(GtkLabel *label,
 {
   GTK_IS_LABEL(label);
   gchar *buf = g_strdup_printf("You password entropy: %.1f bits\n"
-                              "Maximum entropy for ASCII passwords of length %d: %.1f bits\n",
+                              "Maximum entropy for ASCII passwords of length %d: %.1f bits",
                               entropy,
                               len,
                               len * log2(94));
