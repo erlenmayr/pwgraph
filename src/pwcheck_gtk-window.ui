@@ -82,13 +82,14 @@
         <property name="margin_top">20</property>
         <property name="margin_bottom">20</property>
         <property name="row_spacing">20</property>
+        <property name="column_spacing">20</property>
         <child>
-          <object class="GtkLabel" id="label_info">
+          <object class="GtkLabel" id="label_pwe">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="halign">center</property>
-            <property name="valign">center</property>
-            <property name="label" translatable="yes">No password entered yet.</property>
+            <property name="halign">end</property>
+            <property name="label" translatable="yes">Your entropy:</property>
+            <property name="justify">center</property>
           </object>
           <packing>
             <property name="left_attach">0</property>
@@ -181,7 +182,8 @@
           </object>
           <packing>
             <property name="left_attach">0</property>
-            <property name="top_attach">1</property>
+            <property name="top_attach">2</property>
+            <property name="width">2</property>
           </packing>
         </child>
         <child>
@@ -213,7 +215,45 @@
           </object>
           <packing>
             <property name="left_attach">0</property>
-            <property name="top_attach">2</property>
+            <property name="top_attach">3</property>
+            <property name="width">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="label_mxe">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="halign">end</property>
+            <property name="label" translatable="yes">Maximum entropy for this length:</property>
+            <property name="justify">right</property>
+          </object>
+          <packing>
+            <property name="left_attach">0</property>
+            <property name="top_attach">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="label_pwv">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="halign">start</property>
+            <property name="label" translatable="yes">No password entered yet.</property>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="top_attach">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="label_mxv">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="halign">start</property>
+            <property name="label" translatable="yes">No password entered yet.</property>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="top_attach">1</property>
           </packing>
         </child>
       </object>

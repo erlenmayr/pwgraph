@@ -52,6 +52,29 @@ const gchar *formula[] = {
 
 
 
+struct _PwcheckGtkWindow
+{
+  GtkApplicationWindow  parent_instance;
+
+  /* Template widgets */
+  GtkHeaderBar        *header_bar;
+  GtkButton           *bn_compute;
+  GtkEntry            *te_passwd;
+  GtkListStore        *ls_decomp;
+  GtkTreeView         *tv_decomp;
+  GtkImage            *im_graph;
+  GtkLabel            *label_pwv;
+  GtkLabel            *label_mxv;
+  GtkButton           *bn_about;
+  GtkAboutDialog      *about;
+  GtkScrolledWindow   *sw_graph;
+  dictionary          *dict;
+};
+
+G_DEFINE_TYPE(PwcheckGtkWindow, pwcheck_gtk_window, GTK_TYPE_APPLICATION_WINDOW)
+
+
+
 /**
  * list_store_set_decomposition:
  * @ls: list store to put the decomposition into
@@ -60,11 +83,11 @@ const gchar *formula[] = {
  *  Puts the decomposition of the graph's shortest path into a GtkListStore
  */
 void
-list_store_set_decomposition(GtkListStore *ls,
-                             graph        *G)
+list_store_set_decomposition(PwcheckGtkWindow *self,
+                             graph            *G)
 {
-  GTK_IS_LIST_STORE(ls);
-  gtk_list_store_clear(ls);
+  GTK_IS_LIST_STORE(self->ls_decomp);
+  gtk_list_store_clear(self->ls_decomp);
   for (gint i = 0; i < G->n - 1; i++) {
     if (G->path[i] < 0) {
       continue;
@@ -72,8 +95,8 @@ list_store_set_decomposition(GtkListStore *ls,
     GtkTreeIter iter;
     gint len = G->path[i + 1] - G->path[i];
     gchar *buf = g_strndup(G->word + G->path[i], len);
-    gtk_list_store_append(ls, &iter);
-    gtk_list_store_set(ls, &iter,
+    gtk_list_store_append(self->ls_decomp, &iter);
+    gtk_list_store_set(self->ls_decomp, &iter,
                        0, buf,
                        1, name[G->cat[G->path[i]][G->path[i + 1]]],
                        2, len,
@@ -82,31 +105,6 @@ list_store_set_decomposition(GtkListStore *ls,
                        -1);
     g_free(buf);
   }
-}
-
-
-
-/**
- * label_set_rating:
- * @label: label to put the message to
- * @entropy: entropy result of the password
- * @len: length of the password
- *
- * Prints information about the password to a GtkLabel.
- */
-void
-label_set_rating(GtkLabel *label,
-                 gdouble    entropy,
-                 gint       len)
-{
-  GTK_IS_LABEL(label);
-  gchar *buf = g_strdup_printf("You password entropy: %.1f bits\n"
-                              "Maximum entropy for ASCII passwords of length %d: %.1f bits",
-                              entropy,
-                              len,
-                              len * log2(94));
-  gtk_label_set_text(label, buf);
-  g_free(buf);
 }
 
 
@@ -122,16 +120,16 @@ label_set_rating(GtkLabel *label,
  * Computes the entropy of the password.
  */
 GInputStream *
-compute_entropy(GtkListStore *ls,
-                GtkLabel     *label,
-                dictionary   *dict,
-                const gchar  *word)
+compute_entropy(PwcheckGtkWindow *self,
+                const gchar      *word)
 {
   graph *G = graph_new(word);
-  graph_compute_edges(G, dict);
+  graph_compute_edges(G, self->dict);
   gdouble entropy =  graph_compute_path(G);
-  list_store_set_decomposition(ls, G);
-  label_set_rating(label, entropy, G->n - 1);
+  list_store_set_decomposition(self, G);
+  char buf[G_ASCII_DTOSTR_BUF_SIZE];
+  gtk_label_set_text(self->label_pwv, g_ascii_dtostr(buf, G_ASCII_DTOSTR_BUF_SIZE, entropy));
+  gtk_label_set_text(self->label_mxv, g_ascii_dtostr(buf, G_ASCII_DTOSTR_BUF_SIZE, (G->n - 1) * log2(94)));
   GInputStream *svg = graph_gio_get_svg(G);
   graph_free(G);
   return svg;
@@ -139,30 +137,13 @@ compute_entropy(GtkListStore *ls,
 
 
 
-struct _PwcheckGtkWindow
-{
-  GtkApplicationWindow  parent_instance;
-
-  /* Template widgets */
-  GtkHeaderBar        *header_bar;
-  GtkButton           *bn_compute;
-  GtkEntry            *te_passwd;
-  GtkListStore        *ls_decomp;
-  GtkTreeView         *tv_decomp;
-  GtkImage            *im_graph;
-  GtkLabel            *label_info;
-  GtkButton           *bn_about;
-  GtkAboutDialog      *about;
-  GtkScrolledWindow   *sw_graph;
-  dictionary          *dict;
-};
-
-G_DEFINE_TYPE(PwcheckGtkWindow, pwcheck_gtk_window, GTK_TYPE_APPLICATION_WINDOW)
-
-
-
+/*
+ * All the steps that has to be done to get the SVG to a GtkImage widget.
+ * Some steps are required to include HiDPI scale factor.
+ */
 static void
-draw_graph(PwcheckGtkWindow *self, GInputStream *svg)
+draw_graph(PwcheckGtkWindow *self,
+           GInputStream     *svg)
 {
   /* scale factor for HiDPI screens */
   gint sf = gdk_window_get_scale_factor(gtk_widget_get_window(GTK_WIDGET(self)));
@@ -189,10 +170,10 @@ static void
 start_computation(PwcheckGtkWindow *self)
 {
   if (g_str_is_ascii(gtk_entry_get_text(self->te_passwd))) {
-    GInputStream *svg = compute_entropy(self->ls_decomp, self->label_info, self->dict, gtk_entry_get_text(self->te_passwd));
+    GInputStream *svg = compute_entropy(self, gtk_entry_get_text(self->te_passwd));
     draw_graph(self, svg);
   } else {
-    gtk_label_set_text(self->label_info, "Only ASCII characters are supported.");
+    gtk_label_set_text(self->label_pwv, "Only ASCII characters are supported.");
   }
 
 }
@@ -245,7 +226,8 @@ pwcheck_gtk_window_class_init(PwcheckGtkWindowClass *klass)
   gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, tv_decomp);
   gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, im_graph);
   gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, sw_graph);
-  gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, label_info);
+  gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, label_pwv);
+  gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, label_mxv);
   gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, about);
   gtk_widget_class_bind_template_child(widget_class, PwcheckGtkWindow, bn_about);
   gtk_widget_class_bind_template_callback(widget_class, on_compute_clicked);
