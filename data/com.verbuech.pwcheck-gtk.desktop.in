@@ -1,8 +1,0 @@
-[Desktop Entry]
-Name=Password Graph
-Exec=pwcheck-gtk
-Icon=com.verbuech.pwcheck-gtk.svg
-Terminal=false
-Type=Application
-Categories=GTK;
-StartupNotify=true

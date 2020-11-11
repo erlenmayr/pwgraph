@@ -1,1 +1,1 @@
-i18n.gettext('pwcheck-gtk', preset: 'glib')
+i18n.gettext('pwgraph', preset: 'glib')

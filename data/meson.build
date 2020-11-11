@@ -1,6 +1,6 @@
 desktop_file = i18n.merge_file(
-  input: 'com.verbuech.pwcheck-gtk.desktop.in',
-  output: 'com.verbuech.pwcheck-gtk.desktop',
+  input: 'ch.verbuecheln.pwgraph.desktop.in',
+  output: 'ch.verbuecheln.pwgraph.desktop',
   type: 'desktop',
   po_dir: '../po',
   install: true,
@@ -15,8 +15,8 @@ if desktop_utils.found()
 endif
 
 appstream_file = i18n.merge_file(
-  input: 'com.verbuech.pwcheck-gtk.appdata.xml.in',
-  output: 'com.verbuech.pwcheck-gtk.appdata.xml',
+  input: 'ch.verbuecheln.pwgraph.appdata.xml.in',
+  output: 'ch.verbuecheln.pwgraph.appdata.xml',
   po_dir: '../po',
   install: true,
   install_dir: join_paths(get_option('datadir'), 'appdata')
@@ -29,7 +29,7 @@ if appstream_util.found()
   )
 endif
 
-install_data('com.verbuech.pwcheck-gtk.gschema.xml',
+install_data('ch.verbuecheln.pwgraph.gschema.xml',
   install_dir: join_paths(get_option('datadir'), 'glib-2.0/schemas')
 )
 
@@ -42,7 +42,7 @@ endif
 
 scalable_iconsdir = join_paths('icons', 'hicolor', 'scalable', 'apps')
 install_data(
-  join_paths(scalable_iconsdir, 'com.verbuech.pwcheck-gtk.svg'),
+  join_paths(scalable_iconsdir, 'ch.verbuecheln.pwgraph.svg'),
   install_dir: join_paths(get_option('datadir'), scalable_iconsdir)
 )
 

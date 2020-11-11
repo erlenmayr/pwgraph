@@ -28,8 +28,8 @@ Runtime Dependencies:
 ~~~~
 # apt install gnome-devel graphviz
 
-$ git clone https://github.com/erlenmayr/pwcheck-gtk
-$ cd pwcheck-gtk/
+$ git clone https://github.com/erlenmayr/pwgraph
+$ cd pwgraph/
 $ meson build
 $ ninja -C build
 $ ninja -C build install

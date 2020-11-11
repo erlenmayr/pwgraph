@@ -18,8 +18,8 @@
 
 #include <glib/gi18n.h>
 
-#include "pwcheck_gtk-config.h"
-#include "pwcheck_gtk-window.h"
+#include "pwgraph-config.h"
+#include "pwgraph-window.h"
 
 static void
 on_activate (GtkApplication *app)
@@ -35,7 +35,7 @@ on_activate (GtkApplication *app)
   /* Get the current window or create one if necessary. */
   window = gtk_application_get_active_window (app);
   if (window == NULL)
-    window = g_object_new (PWCHECK_GTK_TYPE_WINDOW,
+    window = g_object_new (PWGRAPH_TYPE_WINDOW,
                            "application", app,
                            "default-width", 800,
                            "default-height", 600,
@@ -63,7 +63,7 @@ main (int   argc,
    * application windows, integration with the window manager/compositor, and
    * desktop features such as file opening and single-instance applications.
    */
-  app = gtk_application_new ("com.verbuech.pwcheck-gtk", G_APPLICATION_FLAGS_NONE);
+  app = gtk_application_new ("ch.verbuecheln.pwgraph", G_APPLICATION_FLAGS_NONE);
 
   /*
    * We connect to the activate signal to create a window when the application
