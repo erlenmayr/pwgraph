@@ -173,7 +173,7 @@ start_computation(PwgraphWindow *self)
     GInputStream *svg = compute_entropy(self, gtk_entry_get_text(self->te_passwd));
     draw_graph(self, svg);
   } else {
-    gtk_label_set_text(self->label_pwv, "Only ASCII characters are supported.");
+    gtk_label_set_text(self->label_pwv, _("Only ASCII characters are supported."));
   }
 
 }
