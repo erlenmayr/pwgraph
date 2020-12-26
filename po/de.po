@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pwgraph\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-26 18:28+0100\n"
+"POT-Creation-Date: 2020-12-26 18:33+0100\n"
 "PO-Revision-Date: 2020-12-26 18:14+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -89,7 +89,7 @@ msgstr ""
 "<b>black</b> zufälliges Zeichen\n"
 "<span foreground=\"red\"><b>red</b></span> Wörterbuchwort\n"
 "<span foreground=\"blue\"><b>blue</b></span> Muster auf der Tastatur\n"
-"<span foreground=\"green\"><b>green</b></span> Zeichenfolge\n"
+"<span foreground=\"green\"><b>green</b></span> Zeichensequenz\n"
 "<span foreground=\"orange\"><b>orange</b></span> Musterwiederholung"
 
 #: src/pwgraph-window.ui:227
@@ -111,6 +111,30 @@ msgstr "Github"
 #: src/pwgraph-window.ui:313
 msgid "About"
 msgstr "Über"
+
+#: src/pwgraph-window.c:30
+msgid "none"
+msgstr "keiner"
+
+#: src/pwgraph-window.c:31
+msgid "dictionary"
+msgstr "Wörterbuch"
+
+#: src/pwgraph-window.c:32
+msgid "sequence"
+msgstr "Sequenz"
+
+#: src/pwgraph-window.c:33
+msgid "keyboard"
+msgstr "Tastatur"
+
+#: src/pwgraph-window.c:34
+msgid "repetition"
+msgstr "Wiederholung"
+
+#: src/pwgraph-window.c:35
+msgid "random"
+msgstr "zufällig"
 
 #: src/pwgraph-window.c:176
 msgid "Only ASCII characters are supported."

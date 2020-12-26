@@ -20,19 +20,19 @@
 #include "pwgraph-config.h"
 #include "graph.h"
 #include <math.h>
-
+#include <glib/gi18n.h>
 
 
 /*
  * following category enum
  */
 const gchar *name[] = {
-  "none",
-  "dictionary",
-  "sequence",
-  "keyboard",
-  "repetition",
-  "random"
+  N_("none"),
+  N_("dictionary"),
+  N_("sequence"),
+  N_("keyboard"),
+  N_("repetition"),
+  N_("random")
 };
 
 
@@ -98,7 +98,7 @@ list_store_set_decomposition(PwgraphWindow *self,
     gtk_list_store_append(self->ls_decomp, &iter);
     gtk_list_store_set(self->ls_decomp, &iter,
                        0, buf,
-                       1, name[G->cat[G->path[i]][G->path[i + 1]]],
+                       1, _(name[G->cat[G->path[i]][G->path[i + 1]]]),
                        2, len,
                        3, formula[G->cat[G->path[i]][G->path[i + 1]]],
                        4, G->edge[G->path[i]][G->path[i + 1]],
