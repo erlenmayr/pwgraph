@@ -1,0 +1,113 @@
+# German translations for pwgraph package.
+# Copyright (C) 2020 Stephan Verbücheln
+# This file is distributed under the same license as the pwgraph package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: pwgraph\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-12-26 18:14+0100\n"
+"PO-Revision-Date: 2020-12-26 18:14+0100\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: data/ch.verbuecheln.pwgraph.desktop.in:3
+msgid "Password Graph"
+msgstr "Passwortgraph"
+
+#: src/pwgraph-window.ui:29 src/pwgraph-window.ui:268
+msgid "Graph-based password check"
+msgstr "Graphbasierte Passwortprüfung"
+
+#: src/pwgraph-window.ui:35
+msgid "Enter your password here."
+msgstr "Passwort hier eingeben"
+
+#: src/pwgraph-window.ui:36
+msgid "housefghou"
+msgstr "housefghou"
+
+#: src/pwgraph-window.ui:43
+msgid "Compute"
+msgstr "Berechnen"
+
+#: src/pwgraph-window.ui:47
+msgid "Click to start computation."
+msgstr "Berechnung starten."
+
+#: src/pwgraph-window.ui:91
+msgid "Your entropy:"
+msgstr "Die Entropie:"
+
+#: src/pwgraph-window.ui:114
+msgid ""
+"𝑛: length of the substring\n"
+"𝑖 : position of the substring in the password\n"
+"𝑐: number of characters in the set\n"
+"𝑑: size of the dictionary\n"
+"𝑘: number of keys on the keyboard"
+msgstr ""
+"𝑛: Länge des Substrings\n"
+"𝑖 : Position des Substrings im Passwort\n"
+"𝑐: Anzahl der Zeichen in der Menge\n"
+"𝑑: Größe des Wörterbuchs\n"
+"𝑘: Anzahl der Tasten auf der Tastatur"
+
+#: src/pwgraph-window.ui:127
+msgid "Substring"
+msgstr "Substring"
+
+#: src/pwgraph-window.ui:138
+msgid "Type"
+msgstr "Typ"
+
+#: src/pwgraph-window.ui:149
+msgid "Length"
+msgstr "Länge"
+
+#: src/pwgraph-window.ui:160
+msgid "Formula"
+msgstr "Formel"
+
+#: src/pwgraph-window.ui:171
+msgid "Entropy"
+msgstr "Entropie"
+
+#: src/pwgraph-window.ui:203
+msgid ""
+"<b>black</b> random character\n"
+"<span foreground=\"red\"><b>red</b></span> dictionary word\n"
+"<span foreground=\"blue\"><b>blue</b></span> keyboard pattern\n"
+"<span foreground=\"green\"><b>green</b></span> character sequence\n"
+"<span foreground=\"orange\"><b>orange</b></span> pattern repetition"
+msgstr ""
+"<b>black</b> zufälliges Zeichen\n"
+"<span foreground=\"red\"><b>red</b></span> Wörterbuchwort\n"
+"<span foreground=\"blue\"><b>blue</b></span> Muster auf der Tastatur\n"
+"<span foreground=\"green\"><b>green</b></span> Zeichenfolge\n"
+"<span foreground=\"orange\"><b>orange</b></span> Musterwiederholung"
+
+#: src/pwgraph-window.ui:227
+msgid "Maximum entropy for this length:"
+msgstr "Maximale Entropie für diese Länge:"
+
+#: src/pwgraph-window.ui:240 src/pwgraph-window.ui:252
+msgid "No password entered yet."
+msgstr "Noch kein Passwort eingegeben."
+
+#: src/pwgraph-window.ui:267
+msgid "©2020 Stephan Verbücheln"
+msgstr "©2020 Stephan Verbücheln"
+
+#: src/pwgraph-window.ui:270
+msgid "Github"
+msgstr "Github"
+
+#: src/pwgraph-window.ui:313
+msgid "About"
+msgstr "Über"

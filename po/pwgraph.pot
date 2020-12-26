@@ -1,0 +1,104 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the pwgraph package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pwgraph\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-12-26 18:14+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: data/ch.verbuecheln.pwgraph.desktop.in:3
+msgid "Password Graph"
+msgstr ""
+
+#: src/pwgraph-window.ui:29 src/pwgraph-window.ui:268
+msgid "Graph-based password check"
+msgstr ""
+
+#: src/pwgraph-window.ui:35
+msgid "Enter your password here."
+msgstr ""
+
+#: src/pwgraph-window.ui:36
+msgid "housefghou"
+msgstr ""
+
+#: src/pwgraph-window.ui:43
+msgid "Compute"
+msgstr ""
+
+#: src/pwgraph-window.ui:47
+msgid "Click to start computation."
+msgstr ""
+
+#: src/pwgraph-window.ui:91
+msgid "Your entropy:"
+msgstr ""
+
+#: src/pwgraph-window.ui:114
+msgid ""
+"𝑛: length of the substring\n"
+"𝑖 : position of the substring in the password\n"
+"𝑐: number of characters in the set\n"
+"𝑑: size of the dictionary\n"
+"𝑘: number of keys on the keyboard"
+msgstr ""
+
+#: src/pwgraph-window.ui:127
+msgid "Substring"
+msgstr ""
+
+#: src/pwgraph-window.ui:138
+msgid "Type"
+msgstr ""
+
+#: src/pwgraph-window.ui:149
+msgid "Length"
+msgstr ""
+
+#: src/pwgraph-window.ui:160
+msgid "Formula"
+msgstr ""
+
+#: src/pwgraph-window.ui:171
+msgid "Entropy"
+msgstr ""
+
+#: src/pwgraph-window.ui:203
+msgid ""
+"<b>black</b> random character\n"
+"<span foreground=\"red\"><b>red</b></span> dictionary word\n"
+"<span foreground=\"blue\"><b>blue</b></span> keyboard pattern\n"
+"<span foreground=\"green\"><b>green</b></span> character sequence\n"
+"<span foreground=\"orange\"><b>orange</b></span> pattern repetition"
+msgstr ""
+
+#: src/pwgraph-window.ui:227
+msgid "Maximum entropy for this length:"
+msgstr ""
+
+#: src/pwgraph-window.ui:240 src/pwgraph-window.ui:252
+msgid "No password entered yet."
+msgstr ""
+
+#: src/pwgraph-window.ui:267
+msgid "©2020 Stephan Verbücheln"
+msgstr ""
+
+#: src/pwgraph-window.ui:270
+msgid "Github"
+msgstr ""
+
+#: src/pwgraph-window.ui:313
+msgid "About"
+msgstr ""
