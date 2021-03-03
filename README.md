@@ -43,6 +43,6 @@ $ ninja -C build install
 
 A past CGI version can be found here:
 
-https://verbuecheln.ch/pwcheck/ (IPv6 only)
+https://verbuecheln.ch/pwgraph.html (IPv6 only)
 
 
