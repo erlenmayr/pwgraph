@@ -35,6 +35,8 @@ $ ninja -C build
 $ ninja -C build install
 ~~~~
 
+Note: Git commits should be signed.
+
 ## Screenshots
 
 ![Screenshot](web/screenshot_2020-06-14.png "Screenshot")
