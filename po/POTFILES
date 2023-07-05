@@ -1,7 +1,0 @@
-data/ch.verbuecheln.pwgraph.desktop.in
-data/ch.verbuecheln.pwgraph.appdata.xml.in
-data/ch.verbuecheln.pwgraph.gschema.xml
-src/pwgraph-window.ui
-src/main.c
-src/pwgraph-window.c
-
